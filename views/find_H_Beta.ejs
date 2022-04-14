@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>선별 진료소 베타</title>
+   <link rel="stylesheet" href="/stylesheets/find_H_Beta.css" />
+</head>
+<body>
+
+    <div class="Beta">
+        <p>
+            아직 개발중입니다!
+        </p>
+    </div>
+
+    <ul id="button_bar"> <!-- 메인 페이지, 장소검색 버튼이 있는 ul 태그 -->
+        <li>
+            <a></a>
+        </li>
+        <li style="float: right;">
+          <a class="searchB" href="/search">장소 검색</a> <!-- 업로드 페이지로 넘어가는 버튼  -->
+        </li> 
+        <li style="float: right;"> 
+            <a class="mapB" href="/">메인 페이지</a> <!-- 원래의 지도 페이지로 돌아가는 버튼 -->
+        </li>
+      </ul> 
+
+     
+
+   
+
+
+
+<div  id="map" style="width:100%;height:100vh;">
+
+</div>
+
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d7d5202f8a4ccb3ba72bdf454037d421&libraries=clusterer"></script>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d7d5202f8a4ccb3ba72bdf454037d421"></script> 
+
+    <script>
+        //지도에 관한 코드
+      var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+          mapOption = {
+              center: new daum.maps.LatLng(37.566268010171775, 126.97791572521345), // 지도의 중심좌표 (서울시청)
+              level: 4, // 지도의 확대 레벨
+              mapTypeId : daum.maps.MapTypeId.ROADMAP // 지도종류
+          }; 
+            
+      // 지도를 생성한다 
+    var map = new daum.maps.Map(mapContainer, mapOption); 
+
+    var imageSrc = 'https://cdn.discordapp.com/attachments/921406406324793394/922647514941898803/4c6f131e0851bdc9.png', // 선별 진료소 이미지 링크   
+    imageSize = new daum.maps.Size(33, 35), // 마커이미지의 크기
+    imageOption = {offset: new daum.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+    var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize, imageOption) //markerImage에 이미지 링크, 마커 이미지 크기, 이미지 안에서의 좌표를 담음
+
+    var imageSrcs = 'https://cdn.discordapp.com/attachments/921419397774589952/921787112104280135/black_green.png', // 선별 진료소 이미지 링크   
+    imageSizes = new daum.maps.Size(33, 35), // 마커이미지의 크기
+    imageOptions = {offset: new daum.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+    var markerImages = new daum.maps.MarkerImage(imageSrcs, imageSizes, imageOptions) //markerImage에 이미지 링크, 마커 이미지 크기, 이미지 안에서의 좌표를 담음
+        
+    var markers = [];
+
+             
+            var markerq = new daum.maps.Marker({
+                position: temporary_positions[i].latlng,  // 마커의 위치
+                image: markerImage,
+                clickable: true
+            });
+            markerq.setMap(map);
+
+            var mapoverlay = new daum.maps.CustomOverlay({
+                clickable: true,
+                content: contents,
+                position: temporary_positions[i].latlng
+        });
+
+        daum.maps.event.addListener(markerq, 'click', makeClickListeners(map, markerq, mapoverlay));
+        daum.maps.event.addListener(map, 'click', getClickMap(map, mapoverlay));
+
+function makeClickListeners(map, markerq, mapoverlay) {
+return function() {
+    mapoverlay.setMap(map);
+};
+}
+
+function closeOverlay() {
+    mapoverlay.setMap(null);     
+}
+
+
+function getClickMap(map, mapoverlay){
+return function(){
+    mapoverlay.setMap(null);
+}
+}
+
+function getClickMap(map, overlay){
+return function(){
+    overlay.setMap(null);
+}
+}
+
+        // 인포윈도우를 표시하는 클로저를 만드는 함수입니다 
+        function makeOverListener(map, marker,mapoverlay) {
+            return function() {
+               mapoverlay.open(map, marker);
+            };
+        }
+
+
+// 인포윈도우를 닫는 클로저를 만드는 함수입니다 
+        function makeOutListener(infowindow) {
+            return function() {
+           mapoverlay.close();
+        };
+    }
+
+
+    
+
+       var clusterer = new daum.maps.MarkerClusterer({
+            map: map, // 마커들을 클러스터러로 관리하고 표시할 지도 객체 
+            averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+            minLevel: 10 // 클러스터 할 최소 지도 레벨 
+    });
+      
+
+      // 클러스터러에 마커들을 추가합니다
+      clusterer.addMarkers(markers) 
+   </script>
+   <script>
+
+const showMenu = (toggleId, navbarId, bodyId) => {
+const toggle = document.getElementById(toggleId),
+navbar = document.getElementById(navbarId),
+bodypadding = document.getElementById(bodyId)
+
+if( toggle && navbar ) {
+toggle.addEventListener('click', ()=>{
+navbar.classList.toggle('expander');
+
+bodypadding.classList.toggle('body-pd')
+})
+}
+}
+
+showMenu('nav-toggle', 'navbar', 'body-pd')
+
+/* LINK ACTIVE */
+const linkColor = document.querySelectorAll('.nav__link')
+function colorLink() {
+linkColor.forEach(l=> l.classList.remove('active'))
+this.classList.add('active')
+}
+linkColor.forEach(l=> l.addEventListener('click', colorLink))
+
+/* COLLAPSE MENU */
+const linkCollapse = document.getElementsByClassName('collapse__link')
+var i
+
+for(i=0;i<linkCollapse.length;i++) {
+linkCollapse[i].addEventListener('click', function(){
+const collapseMenu = this.nextElementSibling
+collapseMenu.classList.toggle('showCollapse')
+
+const rotate = collapseMenu.previousElementSibling
+rotate.classList.toggle('rotate')
+});
+}
+</script>
+
+
+
+</body>
+</html>

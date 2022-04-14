@@ -1,0 +1,39 @@
+   <div id="map" style="width:100%;height:100vh;">
+        <div style="position: absolute; z-index:100; left:20px; top: 60px;">
+            <button onclick='zoomIn()'>지도 확대</button>
+            <button onclick='zoomOut()'>지도 축소</button>
+        </div>
+        
+        <div style="position: absolute; z-index:100; left:20px; top: 100px;">
+            <button onclick='showMarkers()'>마커 보이기</button>
+            <button onclick='hideMarkers()'>마커 지우기</button>
+        </div>
+    </div>
+
+    // "마커 보이기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에 표시하는 함수입니다
+        function showMarkers() {
+            setMarkers(map)    
+        }
+
+        // "마커 감추기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에서 삭제하는 함수입니다
+        function hideMarkers() {
+            setMarkers(null);    
+        }
+
+        function zoomIn() {        
+    // 현재 지도의 레벨을 얻어옵니다
+            var level = map.getLevel();
+            
+            // 지도를 1레벨 내립니다 (지도가 확대됩니다)
+            map.setLevel(level - 1);
+  
+    }    
+
+        function zoomOut() {    
+            // 현재 지도의 레벨을 얻어옵니다
+            var level = map.getLevel(); 
+            
+            // 지도를 1레벨 올립니다 (지도가 축소됩니다)
+            map.setLevel(level + 1);
+            
+    }    

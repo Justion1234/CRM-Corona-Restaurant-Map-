@@ -1,0 +1,303 @@
+body{
+    padding: 0px !important;
+    margin: 0px !important;      
+    font-family:"맑은 고딕";
+}
+
+.li a {
+    text-decoration: none;
+  }
+
+  
+#list {
+    position: fixed;
+    list-style-type: none;
+    top: -32px;
+    margin: 92px;
+    overflow: hidden;
+    color: black;
+    background: white;
+    width: 100%;
+    height: 100vh;
+    z-index: 1000;
+}
+
+.list_a{
+    padding: 10px;
+    line-height: 52.5px;
+}
+
+#button_bar {
+    position: absolute;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+    background: black;
+    width: 100%;
+    z-index: 1000;
+  }
+
+#current {
+    position: absolute;
+    top: 60px;
+    z-index: 100000000;
+    background: white;
+    right: 20px;
+    padding: 15px;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bolder;
+}
+  
+  /* 지도 페이지, Q&A 페이지, 업로드 페이지로 가는 3개의 a 태그를 가진 ul 태그의 설정임. */
+  
+  .mapB {
+    float: left;
+  }
+  
+  /* 지도 페이지라고 적힌 버튼의 설정임. */
+  
+  .mapB,.searchB {
+    display: block;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    padding: 14px 16px;
+  }
+  
+  /* button_bar라는 id를 가진 ul 태그가 가진 3개의 a 태그에 대한 설정임 */
+  
+  .searchB {
+    background-color: #daa520;
+  }
+  
+  /* upload 버튼 색상 */
+  
+  .mapB:hover { 
+    background-color: #5f5f5f;
+    color: white;
+  }
+  
+  /* mapB라는 id를 가진 버튼에 마우스를 올리면 #111로 색이 변하도록 설정함
+  (여기서 말하는 mapB의 id를 갖는 버튼은 지도 페이지라는 글자가 적힌 버튼임) */
+  
+  
+  /* 전체영역에서 여백을 없애줌 */
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  /* ul li태그에 리스트 스타일을 없앰 */
+  ul li{
+    list-style: none;
+  }
+  /* a태그에 텍스트 밑줄을 없애고 색상을 #333 */
+  a:not(.list_a) {
+    text-decoration: none;
+    color: white;
+  }
+  /* 글자크기를 16px 맑은 고딕 굵게하고 width넓이 700, 높이 50만큼 배경색은 #ccc, 글자색은 검정색, 라인높이50px
+  menu박스 가운데정렬, 글자가운데 정렬 */
+
+#menu {
+    z-index: 1000;
+    position: absolute;
+    font:bold 16px "malgun gothic";
+    width:700px;
+    height:50px;
+    background: black;
+    color:white;
+    line-height: 50px; 
+    margin:0 auto;
+    text-align: center;
+  }
+  
+  /* menu태그 자식의 ul의 자식 li를 왼쪽정렬과 넓이 140설정 */
+  #menu > ul > li {
+    float:left;
+    width:140px;
+    position:relative;
+  }
+  
+  #menu > ul > li > ul {
+    width:130px;
+    display:none;
+    position: absolute;
+    font-size:14px;
+    background: #333;
+  }
+  
+  #menu > ul > li:hover > ul {
+    display:block;
+  }
+  
+  /* GOOGLE FONTS */
+  @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+  
+  /* VARIABLES CSS */
+  :root {
+      --nav--width: 92px;
+  
+      /* Colores */
+      --first-color: goldenrod;
+      --bg-color: black;
+      --sub-color: #b6cefc;
+      --white-color: #fff;
+  
+      /* Fuente y tipografia */
+      --body-font: 'Poppins', sans-serif;
+      --normal-font-size: 1rem;
+      --small-font-size: .875rem;
+  
+      /* z index */
+      --z-fixed: 100;
+  }
+  
+  /* BASE */
+  *, ::before, ::after {
+      box-sizing: border-box;
+  }
+  
+  body {
+      position: relative;
+      margin: 0;
+      padding: 2rem 0 0 6.75rem;
+      font-family: var(--body-font);
+      font-size: var(--normal-font-size);
+      transition: .5s;
+  }
+  
+  h1 {
+      margin: 0;
+  }
+  
+  ul:not(.collapse__menu) {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+  }
+  
+  a {
+      text-decoration: none;
+  }
+  
+  /* l NAV */
+  .l-navbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--nav--width);
+      height: 100vh;
+      background-color: var(--bg-color);
+      color: var(--white-color);
+      padding: 1.5rem 1.5rem 2rem;
+      transition: .5s;
+      z-index: 100000;
+  }
+  
+  /* NAV */
+  .nav {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+  }
+  
+  .nav__brand {
+      display: grid;
+      grid-template-columns: max-content max-content;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+  }
+  
+  .nav__toggle {
+      font-size: 1.25rem;
+      padding: .75rem;
+      cursor: pointer;
+  }
+  
+  .nav__logo {
+      color: var(--white-color);
+      font-weight: 600;
+      z-index: 100000;
+  }
+  
+  .nav__link {
+      display: grid;
+      grid-template-columns: max-content max-content;
+      align-items: center;
+      column-gap: .75rem;
+      padding: .75rem;
+      color: var(--white-color);
+      border-radius: .5rem;
+      margin-bottom: 1rem;
+      transition: .3s;
+      cursor: pointer;
+  }
+  
+  .nav__link:hover {
+      background-color: var(--first-color);
+  }
+  
+  .nav__icon {
+      font-size: 1.25rem;
+  }
+  
+  .nav_name {
+      font-size: var(--small-font-size);
+  }
+  
+  /* Expander menu */
+  .expander {
+      width: calc(var(--nav--width) + 9.25rem);
+  }
+  
+  /* Add padding body*/
+  .body-pd {
+      padding: 2rem 0 0 16rem;
+  }
+  
+  /* Active links menu */
+  .active {
+      background-color: var(--first-color);
+  }
+  
+  /* COLLAPSE */
+  .collapse {
+      grid-template-columns: 20px max-content 1fr;
+  }
+  
+  .collapse__link {
+      justify-self: flex-end;
+      transition: .5;
+  }
+  
+  .collapse__menu {
+      display: none;
+      padding: .75rem 2.25rem;
+  }
+  
+  .collapse__sublink {
+      color: var(--sub-color);
+      font-size: var(--small-font-size);
+  }
+  
+  .collapse__sublink:hover {
+      color: var(--white-color);
+  }
+  
+  /* Show collapse */
+  .showCollapse {
+      display: block;
+  }
+  
+  /* Rotate icon */
+  .rotate {
+      transform: rotate(180deg);
+      transition: .5s;
+  }

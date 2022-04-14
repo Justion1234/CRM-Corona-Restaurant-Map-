@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>대회 지도</title>
+  <link rel="stylesheet" href="/stylesheets/favorite.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d7d5202f8a4ccb3ba72bdf454037d421&libraries=services"></script>
+</head>
+<body>
+
+    <ul id="button_bar"> <!-- 메인 페이지, 장소검색 버튼이 있는 ul 태그 -->
+        <li>
+            <a></a>
+        </li>
+        <li style="float: right;">
+          <a class="searchB" href="/search">장소 검색</a> <!-- 업로드 페이지로 넘어가는 버튼  -->
+        </li> 
+        <li style="float: right;"> 
+            <a class="mapB" href="/">메인 페이지</a> <!-- 원래의 지도 페이지로 돌아가는 버튼 -->
+        </li>
+      </ul> 
+
+      <div id="current">현재 위치</div> <!--현재 위치 보여주는 버튼-->
+
+      <div class="l-navbar" id="navbar">
+        <nav class="nav">
+            <div>
+                <div class="nav__brand">
+                    <img name="menu-outline" class="nav__toggle" id="nav-toggle" src="https://cdn.discordapp.com/attachments/791275726779318282/938750684600348722/barhhhhhhhhhhh.png"></img>
+                    <a href="#" class="nav__logo">
+                      <img class="logo_img" src="https://cdn.discordapp.com/attachments/791275726779318282/963422594898489384/s.png" height="60px" width="60px;">
+                    </a>
+                </div>
+                <div class="nav__list">
+                    
+                    <a href="/favorite" class="nav__link">
+                        <img name="chatbubbles-outline" class="nav__icon" src="https://cdn.discordapp.com/attachments/791275726779318282/938750508590579712/orang.png"></img>
+                        <span class="nav_name">즐겨찾기</span>
+                    </a>
+    
+                    <a href="/find_H" class="nav__link">
+                        <img name="chatbubbles-outline" class="nav__icon" src="https://cdn.discordapp.com/attachments/791275726779318282/938750484292964392/red_sunbyeal.png"></img>
+                        <span class="nav_name">선별 진료소 </span>
+                    </a>
+            </div>
+            <a href="/find_R" class="nav__link">
+                <img name="chatbubbles-outline" class="nav__icon" src="https://cdn.discordapp.com/attachments/791275726779318282/963422603836530789/ss.png"></img>
+                <span class="nav_name">모범 음식점</span>
+            </a>
+        </nav>
+    </div>
+
+<!-- 지도를 표시할 div 입니다 -->
+<div id="map" style="width:100%;height:100vh;"></div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d7d5202f8a4ccb3ba72bdf454037d421"></script> 
+
+<script type="text/javascript" src="javascripts/favorite.js"></script> <!-- main.js 파일 여기에 연결해서 쓸거임 --> 
+
+<script>
+    $("#current").click(() => {
+        if("geolocation" in navigator){
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const latlng = new kakao.maps.LatLng(lat, lng);
+                marker = new kakao.maps.Marker({ //현재 위치 마커 이따 수정해야함.
+                    map: map,
+                    position: latlng,
+                });
+                
+                panTo(latlng);
+            });
+        }else{
+            alert('위치 정보 사용 불가능')
+        }
+    });
+    function panTo(latlng) {
+    // 이동할 위도 경도 위치를 생성합니다 
+    var level = map.getLevel();
+    
+    // 지도를 1레벨 내립니다 (지도가 확대됩니다)
+    map.setLevel(level = 2);
+
+
+    var moveLatLon = latlng; 
+    // 지도 중심을 부드럽게 이동시킵니다
+    // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
+    map.panTo(moveLatLon); 
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,3458 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>맛있는 음식점</title>
+    <link rel="stylesheet" href="/stylesheets/find_R.css" />
+</head>
+<body>
+    <ul id="button_bar"> <!-- 메인 페이지, 장소검색 버튼이 있는 ul 태그 -->
+        <li>
+            <a></a>
+        </li>
+        <li style="float: right;">
+          <a class="searchB" href="/search">장소 검색</a> <!-- 업로드 페이지로 넘어가는 버튼  -->
+        </li> 
+        <li style="float: right;"> 
+            <a class="mapB" href="/">메인 페이지</a> <!-- 원래의 지도 페이지로 돌아가는 버튼 -->
+        </li>
+      </ul> 
+
+      <div id="current">현재 위치</div> <!--현재 위치 보여주는 버튼-->
+
+      <div class="l-navbar" id="navbar">
+        <nav class="nav">
+            <div>
+                <div class="nav__brand">
+                    <img name="menu-outline" class="nav__toggle" id="nav-toggle" src="https://cdn.discordapp.com/attachments/791275726779318282/938750684600348722/barhhhhhhhhhhh.png"></img>
+                    <a href="#" class="nav__logo">
+                      <img class="logo_img" src="https://cdn.discordapp.com/attachments/791275726779318282/963422594898489384/s.png" height="60px" width="60px;">
+                    </a>
+                </div>
+                <div class="nav__list">
+                    
+                    <a href="/favorite" class="nav__link">
+                        <img name="chatbubbles-outline" class="nav__icon" src="https://cdn.discordapp.com/attachments/791275726779318282/938750508590579712/orang.png"></img>
+                        <span class="nav_name">즐겨찾기</span>
+                    </a>
+    
+                    <a href="/find_H" class="nav__link">
+                        <img name="chatbubbles-outline" class="nav__icon" src="https://cdn.discordapp.com/attachments/791275726779318282/938750484292964392/red_sunbyeal.png"></img>
+                        <span class="nav_name">선별 진료소 </span>
+                    </a>
+            </div>
+            <a href="/find_R" class="nav__link">
+                <img name="chatbubbles-outline" class="nav__icon" src="https://cdn.discordapp.com/attachments/791275726779318282/963422603836530789/ss.png"></img>
+                <span class="nav_name">모범 음식점</span>
+            </a>
+        </nav>
+    </div>
+
+<div id="map" style="width:100%;height:100vh;"></div>
+
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d7d5202f8a4ccb3ba72bdf454037d421&libraries=clusterer%22%3E"></script>
+<script>
+var mapContainer = document.getElementById('map'), // 지도의 중심좌표
+    mapOption = { 
+        center: new kakao.maps.LatLng(37.566268010171775, 126.97791572521345), // 지도의 중심좌표
+        level: 4 // 지도의 확대 레벨
+    }; 
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+var imageSrc = 'https://cdn.discordapp.com/attachments/791275726779318282/963318956393914448/11.png', // 선별 진료소 이미지 링크   
+    imageSize = new daum.maps.Size(33, 35), // 마커이미지의 크기
+    imageOption = {offset: new daum.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+    var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize, imageOption) //markerImage에 이미지 링크, 마커 이미지 크기, 이미지 안에서의 좌표를 담음
+
+// 지도에 마커를 표시합니다 
+
+var positions = [
+    {
+            content : '<div class="wrap">' + 
+            '          <div class="info">' + 
+            '          <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/244593" target="_blank" class="R_name">석양집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로37길 9 E동 8 9호 (용강동 우성연립)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>02-716-6847</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+
+        latlng: new kakao.maps.LatLng(37.5402098809514, 126.94442005618113)
+    },
+    {
+        content: '<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="http://www.mangoplate.com/restaurants/YtlWFdz7Tw" target="_blank" class="R_name">홍반장순대전문점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 동교로 213 1층 (동교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 순대국</div>' + 
+            '                <div><p>02-304-6464</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.560935265989976, 126.92402255951774)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/482469" target="_blank" class="R_name">진평925</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 망원로 87 2층 (망원동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>02-332-8886</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>', 
+        latlng: new kakao.maps.LatLng(37.55787838870672, 126.90627621715929)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/999494" target="_blank" class="R_name">천년각</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 포포포 토정로37길 9 E동 8 9호 (용강동 우성연립)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 짬뽕,짜장</div>' + 
+            '                <div><p>02-323-8300</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56234294493898, 126.90475661038587)
+    },
+
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/840526" target="_blank" class="R_name">정성한줄</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 195 상가4동 108호 (아현동 마포 래미안 푸르지오)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 분식</div>' + 
+            '                <div><p>02-313-8253</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.551408221969005, 126.95345175593208)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/438929" target="_blank" class="R_name">시골보쌈앤감자옹심이</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로 400 지층 01호 (상암동 서울산업진흥원)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 구이</div>' + 
+            '                <div><p>02-303-1592</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.580685832552156, 126.88980344911054)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/576991" target="_blank" class="R_name">상암고기마을</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로48길 10</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 소등심</div>' + 
+            '                <div><p>02-302-8233</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.5766408112535, 126.89444549120924)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/770988" target="_blank" class="R_name">쌍마막회</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 257 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 해장국</div>' + 
+            '                <div><p>0507-1305-4134</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.543258296416745, 126.9391000968902)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/708469" target="_blank" class="R_name">백미향</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 성지길 27 (합정동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 짬뽕</div>' + 
+            '                <div><p>02-312-8253</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.5473330470173, 126.91339630349667)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/782362" target="_blank" class="R_name">신흥부전</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로44길 30-5 (상암동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 모둠전</div>' + 
+            '                <div><p>02-307-7934</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.57660225879377, 126.89569419271939)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/368274" target="_blank" class="R_name">마포나루(1호점)</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 68 (도화동마포아크로타워 지하0102호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>0507-1337-6822</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53947144008389, 126.94773412342494)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/424698" target="_blank" class="R_name">삼보성</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 창전로 32 (구수동외1필지 1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 짜장면</div>' + 
+            '                <div><p>02-717-0088</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.5453171117817, 126.93192668339528)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/244507" target="_blank" class="R_name">램랜드</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 255 1층 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 양고기</div>' + 
+            '                <div><p>02-704-0223</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54360064292515, 126.93886852572506)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1118696" target="_blank" class="R_name">주세풍</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 삼개로3길 6 (도화동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 복어요리</div>' + 
+            '                <div><p>0507-1367-8004</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.539079150657635, 126.94769783030974)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/245745" target="_blank" class="R_name">하나유키</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 25 (마포동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 전통일식</div>' + 
+            '                <div><p>02-716-0011</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53951942501331, 126.94484215455999)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/319238" target="_blank" class="R_name">청춘구락부</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 308 1 2층 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 소등심</div>' + 
+            '                <div><p>02-702-1399</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54032512608947, 126.94291949034424)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/800052" target="_blank" class="R_name">홍대 율촌</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 와우산로 100 (서교동지하1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 닭칼국수</div>' + 
+            '                <div><p>02-324-1150</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.552994705723854, 126.92475066990066)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/244420" target="_blank" class="R_name">장수갈매기</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 도화길 46 (도화동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 갈매기살</div>' + 
+            '                <div><p>02-716-6070</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.541810633804005, 126.95067959688998)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/319257" target="_blank" class="R_name">월매네남원추어탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로14길 19-1 (공덕동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 추어탕</div>' + 
+            '                <div><p>02-704-5333</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54871097642939, 126.95690418734962)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/692925" target="_blank" class="R_name">외양간</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 성미산로 13 (성산동 1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 소갈비</div>' + 
+            '                <div><p>02-334-7942</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55886810758985, 126.90956130633026)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/319257" target="_blank" class="R_name">양산박</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로4길 37 (도화동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 콩나물국밥</div>' + 
+            '                <div><p>0507-1406-0888</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53819729835402, 126.94675903921986)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/798729" target="_blank" class="R_name">춘향골남원추어탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로36길 18 (성산동삼라마이다스109.110.111호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 추어탕</div>' + 
+            '                <div><p>02-302-7524</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56633108065665, 126.90335023922096)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/692470" target="_blank" class="R_name">옹기</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 144 지하1층 (공덕동 태영빌딩)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 수제비</div>' + 
+            '                <div><p>02-714-0116</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54717475234243, 126.95375435456032)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/945979" target="_blank" class="R_name">무쇠솥부대찌개</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로8안길 18 (공덕동지상2층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 부대찌개</div>' + 
+            '                <div><p>0507-1403-3229</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54700560792771, 126.95441922388017)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/637402" target="_blank" class="R_name">사랑채</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 신촌로12가길 36 (노고산동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 우거지갈비탕</div>' + 
+            '                <div><p>02-336-4479</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.555507158264675, 126.93457410132567)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/692989" target="_blank" class="R_name">원조청기와숯불갈비</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">망원제2동, 서울특별시 마포구 월드컵로 105 (망원동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>02-333-0166</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55790007271491, 126.90799919689076)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/637326" target="_blank" class="R_name">태능숯불갈비</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 굴레방로 19-1 (아현동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>02-365-1595</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56210437815241, 126.90442021223092)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/244471" target="_blank" class="R_name">마포원조주물럭</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 294 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 주물럭</div>' + 
+            '                <div><p>02-716-3001</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.5409636501469, 126.94181343922)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/132630" target="_blank" class="R_name">백년토종삼계탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 양화로 118 1층동 (서교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼계탕</div>' + 
+            '                <div><p>02-325-3399</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55398589199415, 126.92018313922054)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/382624" target="_blank" class="R_name">신원복집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 홍익로 29 2층동 (서교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 복어</div>' + 
+            '                <div><p>02-333-1977</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55452637054303, 126.92165293929442)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/92726" target="_blank" class="R_name">참복집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 홍익로 29 2층동 (서교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 복어요리</div>' + 
+            '                <div><p>02-702-1953</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54536179187319, 126.9528982257252)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/403115" target="_blank" class="R_name">거부</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로37길 46 지1-동 13호호 (도화동정우빌딩)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 등심</div>' + 
+            '                <div><p>02-719-3187</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54246315300074, 126.94723091750646)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/639690" target="_blank" class="R_name">남촌집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로35길 12 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 주물럭</div>' + 
+            '                <div><p>02-719-3187</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54028174313543, 126.94443801116711)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/642268" target="_blank" class="R_name">마포활어</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 삼개로5길 8 (도화동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 회정식</div>' + 
+            '                <div><p>02-715-7891</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53833992770503, 126.94798391223007)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/363478" target="_blank" class="R_name">서울찜닭</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로48길 13 1층 (상암동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 찜닭</div>' + 
+            '                <div><p>02-3152-7100</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.57707515718951, 126.89438188155135)
+    },{
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/244540" target="_blank" class="R_name">황톳길</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로11길 15-7 (공덕동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 족발보쌈</div>' + 
+            '                <div><p>02-3272-9240</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54868625927849, 126.95317917064733
+)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="http://www.mangoplate.com/restaurants/p-HuyE6ta6pn" target="_blank" class="R_name">꿀돼지집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 동교로 236 2층 (연남동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼겹살</div>' + 
+            '                <div><p>0507-1342-8177</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56085655697535, 126.92417515271573)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1033659" target="_blank" class="R_name">신촌감자탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 삼진빌딩 103호 1층</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 감자탕</div>' + 
+            '                <div><p>0507-1331-2085</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55480735698236, 126.93834636805556)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="http://www.mangoplate.com/restaurants/vAOSUGGQIH1n" target="_blank" class="R_name">돼지야놀자</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 노고산동 31-77번지 1층</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 뼈해장국</div>' + 
+            '                <div><p>0507-1330-2084</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55426156470215, 126.9374976097839)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1171903" target="_blank" class="R_name">대가설렁탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 신촌로 254 12층 (아현동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 설렁탕</div>' + 
+            '                <div><p>02-365-7706</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55722061086953, 126.95390918168003)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.tripadvisor.co.kr/Restaurant_Review-g294197-d12925535-Reviews-Jeonju_Hyudaiok_Sangam_DMC-Seoul.html" target="_blank" class="R_name">전주현대옥상암DMC점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 상암산로 76 (상암동 YTN뉴스퀘어지1층일부)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 콩나물국밥</div>' + 
+            '                <div><p>002-323-8300</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.57968923330035, 126.89253165271647)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.tripadvisor.co.kr/Restaurant_Review-g294197-d9154964-Reviews-Jeju_Samdadon-Seoul.html" target="_blank" class="R_name">제주삼다돈</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 양화로11길 66 12층 (서교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 오겹살</div>' + 
+            '                <div><p>02-3144-2052</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.552291695861605, 126.91316495456047)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="http://www.mangoplate.com/restaurants/Wrle5DaH-L" target="_blank" class="R_name">센다이</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 만리재로 15 (공덕동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 회</div>' + 
+            '                <div><p>02-718-7288</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.544676586524105, 126.95275652572518)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://blog.naver.com/diasial8848/222549075840" target="_blank" class="R_name">진어참치</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 연남로3길 34 (연남동(1층))</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 회</div>' + 
+            '                <div><p>0507-1345-7412</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.560906395520114, 126.92067535271566)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/637326" target="_blank" class="R_name">태능숯불갈비</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 굴레방로 19-1 (아현동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>02-365-1595</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56203634073483, 126.90437729689086)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/798729" target="_blank" class="R_name">춘향골남원추어탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로36길 18 (성산동삼라마이다스109.110.111호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 추어탕</div>' + 
+            '                <div><p>02-302-7524</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.566297063885706, 126.90340388339601)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/713873" target="_blank" class="R_name">동원참치 마포롯데캐슬점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 109 (공덕동지2층롯데캐슬B204호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 참치회</div>' + 
+            '                <div><p>0507-1390-7233</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54479773964658, 126.95068271038504)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="http://www.mangoplate.com/restaurants/E1sTtBQWPB" target="_blank" class="R_name">임가네해물전국</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 망원로 49-1 (망원동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 아구해물탕</div>' + 
+            '                <div><p>02-323-7563</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.557093584899484, 126.90240013922057)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/875322" target="_blank" class="R_name">마포우샤미</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로14가길 4 (공덕동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 소고기보신탕</div>' + 
+            '                <div><p>02-3273-8253</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.548962391077765, 126.95578428155032)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/692537" target="_blank" class="R_name">목우촌한우명가</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 312-1 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한식(뚝불고기)</div>' + 
+            '                <div><p>02-717-8110</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53995762401337, 126.94324515456006)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/787545" target="_blank" class="R_name">지호한방삼계탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 독막로 229 2층 (신수동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼계탕</div>' + 
+            '                <div><p>02-323-9933</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54786172912251, 126.93945849361246)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/731008" target="_blank" class="R_name">놀부부대찌개</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로 396 (상암동누리꿈스퀘어 B1034호- B1036호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 부대찌개</div>' + 
+            '                <div><p>02-2132-8787</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.556708564551705, 126.92201421223068)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.diningcode.com/profile.php?rid=HmHewh1m7VrW" target="_blank" class="R_name">안동한우마을</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 동교로 162 (서교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한우구이</div>' + 
+            '                <div><p>0507-1375-9293</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55583250942078, 126.91998036990063)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.diningcode.com/profile.php?rid=RXCVCDoA9hmh" target="_blank" class="R_name">엉터리생고기</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 170 (신정동 1층일부 2층일부)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 소한마리</div>' + 
+            '                <div><p>02-337-5556</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54755122731752, 126.93704590494866)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/eXvlkmeWTgOI" target="_blank" class="R_name">대한족발보쌈</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 양화로6길 53 (서교동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 족발보쌈</div>' + 
+            '                <div><p>02-322-4465</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54902200332521, 126.91731921223042)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.diningcode.com/profile.php?rid=wHhnSP2sRJoZ" target="_blank" class="R_name">바다애(愛)회</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 동교로 128 A동 1 2층 (서교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 생선회</div>' + 
+            '                <div><p>02-335-1003</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55487478291556, 126.91639771718778)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/452730" target="_blank" class="R_name">칠프로(7%)칠백식당</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로32길 4 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한우</div>' + 
+            '                <div><p>02-718-0705</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.541158594234105, 126.94124651045392)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/319220" target="_blank" class="R_name">봉피양마포</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 308 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한우</div>' + 
+            '                <div><p>02-715-2292</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54021859466363, 126.94284541038493)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/329035" target="_blank" class="R_name">미래</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 144 (공덕동 태영빌딩 지하1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 등심</div>' + 
+            '                <div><p>02-718-5292</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.5469760648062, 126.95369705070597)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/403115" target="_blank" class="R_name">거부</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로37길 46 지1-동 13호호 (도화동정우빌딩)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 샤브샤브삽겹살</div>' + 
+            '                <div><p>02-719-3187</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.542520476615046, 126.94724509689014)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/245924" target="_blank" class="R_name">김박사손칼국수</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 307 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 칼국수보쌈</div>' + 
+            '                <div><p>02-714-2245</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.540478994188256, 126.9431680968901)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/421761" target="_blank" class="R_name">김앤김대게공덕점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 109 (공덕동 롯데캐슬 지하2층 201호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 대게</div>' + 
+            '                <div><p>02-707-3390</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54499295938697, 126.95060659689017)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/134301" target="_blank" class="R_name">양촌리</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 304 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>0507-1365-0455</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54039932300528, 126.94259502387993)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://blog.naver.com/harmony_mj/222599580904" target="_blank" class="R_name">진가</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 동교로34길 12 1층 (연남동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 깐풍기</div>' + 
+            '                <div><p>02-326-1668</p></div>' + 
+            '            </div>' +  
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.560996735765244, 126.92497714038109)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/736920" target="_blank" class="R_name">나주곰탕&오우돈</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 신촌로18길 19 (노고산동 1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 곰탕</div>' + 
+            '                <div><p>02-336-6824</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.554699729506105, 126.93494512572563)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/714711" target="_blank" class="R_name">한촌설렁탕망원역점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로 85 2층 (망원동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 설렁탕</div>' + 
+            '                <div><p>02-322-7579</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.556440570376985, 126.90955951223063)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/368274" target="_blank" class="R_name">마포나루 아크로점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 68 (도화동마포아크로타워 지하0102호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 닭찜</div>' + 
+            '                <div><p>0507-1337-6822</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54138979252535, 126.94893739689012)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/367918" target="_blank" class="R_name">김앤김대게</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 양화로 100 (서교동 3층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 킹크랩</div>' + 
+            '                <div><p>02-333-6659</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55292512887586, 126.91868672572552)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/630438" target="_blank" class="R_name">색동저고리</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 도화길 27 (도화동 2층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-711-1211</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54103413575327, 126.94894553921999)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/WgnmUFDLNJlq" target="_blank" class="R_name">도깨비어시장</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 신촌로 74 (노고산동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 광어</div>' + 
+            '                <div><p>0507-1429-4985</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55605523575834, 126.93401315456067)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.diningcode.com/profile.php?rid=ETFU7wzw6Vmd" target="_blank" class="R_name">천장어</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 백범로 122 1층 (염리동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 장어구이</div>' + 
+            '                <div><p>0507-1315-9598</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54735604540146, 126.94302608155017)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/642852" target="_blank" class="R_name">목포낙지마을</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로32길 11 (성산동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 연포탕낙지볶음</div>' + 
+            '                <div><p>02-333-1032</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.566982439494545, 126.90461388377886)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/363460" target="_blank" class="R_name">서룡</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로 361 204호 (상암동DMC 이안상암2단지 2층 201202203)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 짜장면,짬뽕</div>' + 
+            '                <div><p>0507-1432-4040</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.57720272711198, 126.89112911038647)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/980733" target="_blank" class="R_name">㈜해담가합정점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 양화로 45 (서교동 1층 101호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 해담가특선</div>' + 
+            '                <div><p>0507-1367-6060</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55163538558641, 126.91392938155037)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/363454" target="_blank" class="R_name">양평막국수&숯불닭갈비</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로44길 57 (상암동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 숯불닭갈비막국수</div>' + 
+            '                <div><p>02-306-0833</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.58292651878656, 126.89302963250601)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/132798" target="_blank" class="R_name">춘자대구탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로1길 50 (서교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 대구탕</div>' + 
+            '                <div><p>02-334-5787</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.554176180366305, 126.9189532275707)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/40877" target="_blank" class="R_name">마포진짜원조최대포집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 만리재로1길 3 (공덕동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈매기살</div>' + 
+            '                <div><p>0507-1333-9293</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.544825519568874, 126.95181738155019)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/387152" target="_blank" class="R_name">우림집돼지갈비</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로37길 13 1층 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 생등심</div>' + 
+            '                <div><p>02-712-4650</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54092116449349, 126.94461819689006)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/791756" target="_blank" class="R_name">돌쇠풍천민물장어</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로 87 (망원동 마포로얄프라자 201~203호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 장어</div>' + 
+            '                <div><p>02-322-9197</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.556630975322555, 126.90923205456072)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/419237" target="_blank" class="R_name">설참치홍대점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 양화로15길 12 (서교동 1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 생선회</div>' + 
+            '                <div><p>02-323-0037</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.554726701374534, 126.91934108155058)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/382897" target="_blank" class="R_name">지중해참치</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 새창로 13 (도화동 2층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 참치회</div>' + 
+            '                <div><p>0507-1403-3837</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54236156299062, 126.95160096805506)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/402423" target="_blank" class="R_name">하노이의 아침</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로 396 (상암동누리꿈스퀘어 2층 R204호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 쌀국수</div>' + 
+            '                <div><p>02-376-5320</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.581636533779424, 126.89074879873677)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/799221" target="_blank" class="R_name">신의주찹쌀순대전문점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 서강로 128 (노고산동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 순대국</div>' + 
+            '                <div><p>02-3275-1780</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54176581889155, 126.94545960891139)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://blog.naver.com/ksysysy/221349378738" target="_blank" class="R_name">유대경 능이 누룽지 닭오리 백숙</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 서강로 128 (노고산동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 백숙</div>' + 
+            '                <div><p>02-715-1772</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.5537515643104, 126.93505715456054)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/642359" target="_blank" class="R_name">욕지도</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로16길 13 (아현동 1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 막썰이회</div>' + 
+            '                <div><p>02-313-6007</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55012078869802, 126.95603975456038)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/161910" target="_blank" class="R_name">양화정</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로1길 17 1층 (합정동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>02-323-5777</p></div>' +   
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54952910172569, 126.91197703582618)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/244489" target="_blank" class="R_name">원조 조박집 본관</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 311 (용강동 1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 소갈비</div>' + 
+            '                <div><p>02-712-7462</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.540008302258684, 126.94376998154998)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/385548" target="_blank" class="R_name">불킹해물요리전문점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로 190 (성산동이안상암2차 1층 109호110호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 물회</div>' + 
+            '                <div><p>02-308-7703</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.564204050860596, 126.90318419504584)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/ZIwnKQaQDi9p" target="_blank" class="R_name">청기와타운 (마포점)</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 296 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 순대국밥</div>' + 
+            '                <div><p>0507-1387-1474</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.540768965171516, 126.94205685456006)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/642712" target="_blank" class="R_name">무공해숯불갈비</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 만리재로1길 8 (공덕동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비</div>' + 
+            '                <div><p>02-716-4296</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.545129865280515, 126.95275095456023)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1034365" target="_blank" class="R_name">원당감자탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 도화길 35 1층일부 (도화동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 감자탕</div>' + 
+            '                <div><p>02-713-7612</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54167327551535, 126.94938050223257)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/809064" target="_blank" class="R_name">장남식당</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로33길 5 1층 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼겹살구이</div>' + 
+            '                <div><p>0507-1317-8392</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.542224846205094, 126.94239727536255)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.diningcode.com/profile.php?rid=lTGE24OnV95L" target="_blank" class="R_name">돼지구이백반</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 동교로 240 (연남동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지불백</div>' + 
+            '                <div><p>02-333-9921</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.561452184484665, 126.92436289504566)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/786748" target="_blank" class="R_name">서강8경율도</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 토정로 128 6층 (상수동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 스시,회</div>' + 
+            '                <div><p>02-334-0070</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54504680785168, 126.92543686986708)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/802925" target="_blank" class="R_name">무한장어 공덕점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 만리재로1길 7 (공덕동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 장어구이</div>' + 
+            '                <div><p>02-701-7399</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.544746426406476, 126.95218579689022)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/368275" target="_blank" class="R_name">고등어김치찜전문점군자네</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 만리재로1길 7 (공덕동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 고등어김치찜</div>' + 
+            '                <div><p>02-706-5454</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.545693537193166, 126.93947941038522)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/279008" target="_blank" class="R_name">원할머니보쌈마포공덕점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 173 (공덕동 마포현대하이엘 1층 118119호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 보쌈정식</div>' + 
+            '                <div><p>050-4570-3910</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55004501313036, 126.95438651038532)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/365385" target="_blank" class="R_name">칭닌</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로24길 4 2층 203204호 (아현동 공덕자이아파트)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 중식</div>' + 
+            '                <div><p>02-393-6688</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55429076338714, 126.9579246545606)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/640440" target="_blank" class="R_name">본죽(도화점)</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 도화길 43 2층 202호 (도화동 나눔빌딩)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 죽</div>' + 
+            '                <div><p>02-717-5000</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.541921363593445, 126.95028983921995)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/801036" target="_blank" class="R_name">광남수사</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로8안길 18 (공덕동 지상1층지하1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 생대구</div>' + 
+            '                <div><p>0507-1487-0005</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.547015207905744, 126.95460776990035)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/773199" target="_blank" class="R_name">대도식당 마포대로점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 19 지1층 14호 (마포동 신화빌딩)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한우</div>' + 
+            '                <div><p>02-714-9772</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.539142896627574, 126.94424422387985)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/403152" target="_blank" class="R_name">장가네한우촌</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 양화로16길 10 (서교동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 버섯불고기</div>' + 
+            '                <div><p>02-334-4854</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55364760974477, 126.9203303545605)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/759852" target="_blank" class="R_name">월드아구찜</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로34길 13 203-1203-2호 (성산동 상암월드시티)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 대구탕</div>' + 
+            '                <div><p>02-2299-2409</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56561106545223, 126.90349058155098)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/702583" target="_blank" class="R_name">나루터</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로4길 32-4 (도화동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼합홍어회</div>' + 
+            '                <div><p>02-701-6233</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.538296292477455, 126.94630751122388)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/998059" target="_blank" class="R_name">서리원</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로 173 (공덕동 현대하이엘빌딩B123124125126호)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 굴비정식</div>' + 
+            '                <div><p>0507-1385-3831</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.549954319439955, 126.95436119689029)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/317409" target="_blank" class="R_name">화수목</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 창전로 70 12층 (신수동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 중식</div>' + 
+            '                <div><p>02-3142-3611</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.548707199598745, 126.9330875082066)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/648482" target="_blank" class="R_name">성진설렁탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로8길 9 (공덕동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 설렁탕</div>' + 
+            '                <div><p>02-714-7285</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54627405261521, 126.95448607804799)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/743112" target="_blank" class="R_name">이조명가</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 마포대로4나길 56 1층 (마포동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼겹주물럭</div>' + 
+            '                <div><p>0507-1318-3124</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53711953456179, 126.94467858131055)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/9fUICT_ZvwII" target="_blank" class="R_name">여우골초밥</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵북로1길 20 (서교동1F)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 모둠초밥</div>' + 
+            '                <div><p> 02-6010-4989</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55502831749647, 126.91999149253343)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1033495" target="_blank" class="R_name">개성손만두 마포점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 대흥로 64 1층 (대흥동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 만두전골</div>' + 
+            '                <div><p>02-701-2500</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55681351582409, 126.93507153896707)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/799221" target="_blank" class="R_name">신의주찹쌀순대 마포역점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 큰우물로 66 (용강동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 순대국</div>' + 
+            '                <div><p>02-3275-1780</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.541804160281266, 126.94546894886372)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://blog.naver.com/tpadid/222597661107" target="_blank" class="R_name">덕승루</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 백범로1길 12 (노고산동 12층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 양갈비</div>' + 
+            '                <div><p>0507-1463-7974</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55438694385804, 126.93780072175396)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/zmiC9PdqBBbv" target="_blank" class="R_name">삼곱식당 합정점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로 43 (합정동1층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼곱세트</div>' + 
+            '                <div><p>0507-1317-3892</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55322565381017, 126.91167995271536)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/829622" target="_blank" class="R_name">참치가 서교본점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 양화로 100-10 (서교동2층)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 참치회</div>' + 
+            '                <div><p>0507-1427-1008</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.552622072015026, 126.91894999689042)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/642465" target="_blank" class="R_name">마산아구찜</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 마포구 월드컵로1길 30 (합정동)</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 아구찜</div>' + 
+            '                <div><p>02-325-5523</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54969301117806, 126.91121080147164)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/728456" target="_blank" class="R_name">신사미도참치</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 강남구 강남대로152길 21</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 참치초밥</div>' + 
+            '                <div><p>0507-1311-3636</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.51769858910174, 127.02107756083514)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/937851" target="_blank" class="R_name">손큰할매순대국 서대문역점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 서대문구 통일로9안길 38</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 순대국</div>' + 
+            '                <div><p>02-365-6610</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.565853935075054, 126.96558236778263)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/515452" target="_blank" class="R_name">명당횟집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 서대문구 응암로 87</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 도미</div>' + 
+            '                <div><p>02-374-3500</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.58100175062044, 126.91161619476777)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1131934" target="_blank" class="R_name">에바다 생고기</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 서대문구 홍은중앙로 95</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼겹살,목살</div>' + 
+            '                <div><p>02-391-9293</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.59490296728321, 126.94691151068109)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://diningcode.com/profile.php?rid=oQGlSn6ICM5q" target="_blank" class="R_name">풍미흑염소</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울시 서대문구 북가좌동 335-9</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 흑염소</div>' + 
+            '                <div><p>02-303-2551</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.585400702005344, 126.91503746963494)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/637278" target="_blank" class="R_name">영광굴비백반</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 강동구 성내로8길 9-17</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 영광굴비 백반</div>' + 
+            '                <div><p>02-487-5766</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.52879100704145, 127.12448274079675)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://blog.naver.com/ddalgi751220/222073428232" target="_blank" class="R_name">설경</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 은평구 역말로9길 3</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 양장피</div>' + 
+            '                <div><p>02-388-1667</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.611502856822916, 126.92165635429231)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/434302" target="_blank" class="R_name">장군보쌈</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 서대문구 수색로 28-5</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 족발,보쌈</div>' + 
+            '                <div><p>050-4457-4026</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56970187525605, 126.91549311011094)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/736943" target="_blank" class="R_name">북한산착한낙지</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강북구 수유동 535-362</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 낙지덮밥</div>' + 
+            '                <div><p>02-905-7963</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.646386689635584, 127.00576577085336)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/432461" target="_blank" class="R_name">양촌리화로구이</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 광진구 아차산로 482</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼겹살,목살</div>' + 
+            '                <div><p>02-452-7271</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54061549394548, 127.09538732360214)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/416262" target="_blank" class="R_name">마루국시미아점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 강북구 도봉로 242</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-980-2400</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.63106650093249, 127.02515390991438)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1042673" target="_blank" class="R_name">곽만근갈비탕 수유직영점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 강북구 노해로 3</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 설렁탕</div>' + 
+            '                <div><p>02-902-7400</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.635929193581184, 127.02271118427109)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/UYS8Lg4lxh8e" target="_blank" class="R_name">윤가네 오리구이 전문점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">경기도 김포시 김포한강8로148번길 8-27</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 닭,오리요리</div>' + 
+            '                <div><p>031-992-2644</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.63651871019801, 126.64372957021935)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/415639" target="_blank" class="R_name">마루벌돌구이 미아점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 강북구 솔샘로67길 137</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼겹살,목살</div>' + 
+            '                <div><p>02-980-9222</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.623208833851656, 127.02623193894911)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/511445" target="_blank" class="R_name">개나리산장&개나리포차</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강북구 삼양로173길 319 개나리산장 </div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼계탕,백숙,찜닭</div>' + 
+            '                <div><p>02-993-5993</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.6558369171166, 126.99807424080186)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/402016" target="_blank" class="R_name">굴마을낙지촌 신림점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 관악구 남부순환로 1627</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 굴</div>' + 
+            '                <div><p>02-889-0916</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.48487259015959, 126.93150805428724)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/422855" target="_blank" class="R_name">삼천포집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 종로구 종로40가길 5</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 씨푸드</div>' + 
+            '                <div><p>02-2234-3193</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.57039035454485, 127.00635416778296)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/319492" target="_blank" class="R_name">장수갈비</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울시 중구 충무로1가 25-45</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 불고기,갈비살,차돌박이</div>' + 
+            '                <div><p>02-775-9292</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56111631469893, 126.98311400102716)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/390079" target="_blank" class="R_name">서우샤브샤브 미아점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강북구 도봉로 213</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 샤브샤브</div>' + 
+            '                <div><p>02-983-9446</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.6277779177868, 127.02526758127743)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/747680" target="_blank" class="R_name">육달포 소한마리 수유본점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강북구 덕릉로 101</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 꽃등심,등심,육회</div>' + 
+            '                <div><p>02-990-7517</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.63507351765625, 127.02490672545734)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/343888" target="_blank" class="R_name">광명족발</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강북구 미아동 684-14</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 족발,보쌈</div>' + 
+            '                <div><p>050-7460-5536</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.6189702489555, 127.02073709847215)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/450373" target="_blank" class="R_name">귀품찬 수유 직영점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강북구 도봉로 313</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 돼지갈비,갈매기살</div>' + 
+            '                <div><p>02-995-0092</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.63645756210809, 127.02347324197403)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/766410" target="_blank" class="R_name">평가옥(여의도점)</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 영등포구 여의대방로 379</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-769-1577</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.51921902341921, 126.93091359661676)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://blog.naver.com/everything91/222590202324" target="_blank" class="R_name">돌배기집(영등포역점)</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 영등포구 영중로4길 6-1 1층</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 소고기구이</div>' + 
+            '                <div><p>02-2676-7596</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.517291951247785, 126.90716590388975)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/341301" target="_blank" class="R_name">값진식육</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 영등포구 선유로 58-4</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 꽃등심,등심,육회</div>' + 
+            '                <div><p>02-2634-9288</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.51914436023121, 126.88970401278765)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1114745" target="_blank" class="R_name">본차이나</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">인천 남동구 용천로153번길 12</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 중국음식</div>' + 
+            '                <div><p>032-441-5558</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.46372871374262, 126.71376748127089)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1021185" target="_blank" class="R_name">남원골명품추어탕</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 양천구 화곡로 95</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 해물탕,해물요리,꽃게</div>' + 
+            '                <div><p>02-2608-4655</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.5399625384498, 126.83247108127391)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1112143" target="_blank" class="R_name">섬어부밥상</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 양천구 신정중앙로 85</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 씨푸드</div>' + 
+            '                <div><p>02-2694-1100</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.52692345595671, 126.86137467718565)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="hhttps://www.siksinhot.com/P/759404" target="_blank" class="R_name">어다리횟집 발산점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강서구 강서로54길 14</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 어다리</div>' + 
+            '                <div><p>02-3664-0015</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.55908126525893, 126.83931208312615)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/445432" target="_blank" class="R_name">T.G.I.F 롯데백화점 김포공항점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 강서구 하늘길 38</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 패밀리레스토랑</div>' + 
+            '                <div><p>02-6116-5711</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56698588300874, 126.8025547119624)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/Ef_nO3Q9hVd7" target="_blank" class="R_name">광선집 돼지특수부위전문</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강서구 곰달래로 149 소망빌딩 1F</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 고기요리</div>' + 
+            '                <div><p>02-2602-0608</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53096190726949, 126.84962015511135)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/867450" target="_blank" class="R_name">서울회마차</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 구로구 고척로 231</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 회</div>' + 
+            '                <div><p>02-2686-7730</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.506459145245984, 126.85869188312395)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/614061" target="_blank" class="R_name">참좋은식당</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 금천구 범안로15길 73</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-346-4631</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.46966637769157, 126.89157903894295)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/244593" target="_blank" class="R_name">누렁이부추곱창</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 구로구 디지털로32길 97-6</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 곱창,양,대창,막창</div>' + 
+            '                <div><p>02-855-7123</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.483264712266994, 126.90079998312312)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/645297" target="_blank" class="R_name">황가네감자탕구로점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 구로구 가마산로 217</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 감자탕</div>' + 
+            '                <div><p>02-859-2105</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.493852991751474, 126.88533941195942)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/242671" target="_blank" class="R_name">유명국양평해장국</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 서초구 강남대로101길 11</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 해장국,국밥</div>' + 
+            '                <div><p>02-544-7777</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.516670226544875, 127.0185848389448)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1145764" target="_blank" class="R_name">옛날육개장</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 관악구 관악로 154-6</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-878-0233</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.4790063197078, 126.95289439846647)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/792409" target="_blank" class="R_name">스시건</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 관악구 호암로24길 35</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 일본음식,초밥</div>' + 
+            '                <div><p>02-871-8286</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.46982934480156, 126.93502812359928)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/530818" target="_blank" class="R_name">돈유창 전문점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 금천구 독산로 188</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 곱창,양,대창,막창</div>' + 
+            '                <div><p>02-808-0288</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.46396631317443, 126.90353095428644)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/KX0UEdTIDkce" target="_blank" class="R_name">반포식스 교대역점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 서초구 서초대로50길 18 유성빌딩 1F</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 베트남음식</div>' + 
+            '                <div><p>02-521-6661</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.49366999767129, 127.01746668998089)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/482896" target="_blank" class="R_name">어랑 생선밥상</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 서초구 사평대로57길 72</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-516-3690</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.507552358067834, 127.02222978787512)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/373708" target="_blank" class="R_name">묘오또</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 서초구 방배로28길 16</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 일본음식,초밥</div>' + 
+            '                <div><p>02-536-5980</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.490422962739345, 126.99306989661561)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1051614" target="_blank" class="R_name">그릴진 이수점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 동작구 동작대로27다길 31</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼겹살,목살</div>' + 
+            '                <div><p>02-532-4135</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.48622261988128, 126.98044981010771)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/VHKbWWWeBxSj" target="_blank" class="R_name">귄식당</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">	서울특별시 서초구 방배로13길 18 126호</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 일식</div>' + 
+            '                <div><p>070-8867-0511</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.483294094296916, 126.99525523894351)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/784700" target="_blank" class="R_name">빽찐라면</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 동작구 상도로 295</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 라면,칼국수</div>' + 
+            '                <div><p>02-6397-4186</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.50171126977541, 126.94938256643475)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/390865" target="_blank" class="R_name">이올로화덕피자</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 서초구 강남대로39길 5</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 이태리레스토랑</div>' + 
+            '                <div><p>02-522-9994</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.48637828621288, 127.03261879661545)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/998436" target="_blank" class="R_name">홈수끼 학동점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강남구 언주로 708</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 샤브샤브</div>' + 
+            '                <div><p>02-3445-4124</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.51644180738323, 127.03568563894481)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/245465" target="_blank" class="R_name">한성칼국수 논현본점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강남구 언주로 735 관세개발원빌딩 지하</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 칼국수</div>' + 
+            '                <div><p>02-544-0540</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.52051282691953, 127.03555501698231)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/835257" target="_blank" class="R_name">조인바이트</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 강남구 선릉로112길 13</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 양식</div>' + 
+            '                <div><p>02-3444-3611</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.51170684069514, 127.04464181196018)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1131372" target="_blank" class="R_name">코이라멘 한티역점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 강남구 선릉로64길 11-5</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 일본음식,초밥</div>' + 
+            '                <div><p>070-4062-6069</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.49834814286519, 127.0527809524363)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/755905" target="_blank" class="R_name">원할머니국수보쌈 제2롯데월드점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 송파구 올림픽로 300</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-3213-4545</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.51275053448493, 127.10165858312422)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1220828" target="_blank" class="R_name">델리커리 가든파이브 현대시티몰점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 송파구 충민로 66</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 인도음식</div>' + 
+            '                <div><p>02-2673-2073</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.4778161196702, 127.12501974419078)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1071074" target="_blank" class="R_name">오캄</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 성동구 왕십리로 410</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 이태리레스토랑</div>' + 
+            '                <div><p>02-516-5677</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56634373098558, 127.02928372124377)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/694895" target="_blank" class="R_name">이북집찹쌀순대</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 중구 퇴계로 406-2 </div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 순대국</div>' + 
+            '                <div><p>02-2235-5533</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.56535557468723, 127.01679356963417)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1171059" target="_blank" class="R_name">전자방</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 성동구 성수일로12길 23 1층</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 중국음식</div>' + 
+            '                <div><p>02-420-1193</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54841932507258, 127.05366522524027)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1075612" target="_blank" class="R_name">왕십리연탄집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 성동구 무학로6길 51</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-2291-9073</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.565067779766835, 127.03587912545457)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.mangoplate.com/restaurants/-aTnFQvLVzXO" target="_blank" class="R_name">원평갈비</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 용산구 대사관로24길 22</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 고기요리</div>' + 
+            '                <div><p>02-790-3459</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.532666192363244, 127.00501385428917)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1038620" target="_blank" class="R_name">일일향 신용산7호점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 용산구 한강대로40길 26</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 중국음식</div>' + 
+            '                <div><p>02-792-4300</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53014932972445, 126.97060406778132)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/648374" target="_blank" class="R_name">(주반야주)무교동낙지</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 성북구 북악산로 852</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 낙지</div>' + 
+            '                <div><p>02-941-3341</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.59906889044914, 127.01852813894808)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/349164" target="_blank" class="R_name">브라이리퍼블릭푸드</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 용산구 이태원로14길 19</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 아프리카음식</div>' + 
+            '                <div><p>070-8879-1967</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53368364627318, 126.9907612677815)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/1090689" target="_blank" class="R_name">오토김밥</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 용산구 녹사평대로26길 93 스페이스소마빌딩 1층 오토김밥</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 김밥</div>' + 
+            '                <div><p>02-794-0110</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53171501835111, 126.99462808127363)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/639618" target="_blank" class="R_name">서강껍데기 3호점</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울 용산구 이촌로 9</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 삼겹살,목살</div>' + 
+            '                <div><p>02-701-8439</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.53116889228634, 126.95483695611378)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/377581" target="_blank" class="R_name">정</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 용산구 청파로47나길 4</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 중국음식</div>' + 
+            '                <div><p>02-719-8719</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.54518651871015, 126.96703839661772)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/373686" target="_blank" class="R_name">처가집</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 중구 동호로11가길 22</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 한정식</div>' + 
+            '                <div><p>02-2235-4589</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.553201328062755, 127.00824275428992)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/251568" target="_blank" class="R_name">혜성칼국수</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 동대문구 왕산로 247-1</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 칼국수</div>' + 
+            '                <div><p>02-967-6918</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.58351341334247, 127.0489750966193)
+    },
+    {
+        content:'<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+            '            <a href="https://www.siksinhot.com/P/351299" target="_blank" class="R_name">성천 막국수</a>'+
+            '            ' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="desc">' +  
+            '                <div class="ellipsis">서울특별시 동대문구 답십리로48나길 2</div>' + 
+            '                <div class="jibun ellipsis">대표 메뉴 : 설렁탕</div>' + 
+            '                <div><p>02-2244-5529</p></div>' + 
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>',
+        latlng: new kakao.maps.LatLng(37.569958325193795, 127.05775168127515)
+    },
+];
+
+
+    
+for (var i = 0; i < positions.length; i ++) {
+    
+    // 마커를 생성합니다
+    var marker = new kakao.maps.Marker({
+        map: map, // 마커를 표시할 지도
+        position: positions[i].latlng, // 마커를 표시할 위치
+        title : positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+        image : markerImage, // 마커 이미지 
+        clickable: true
+    });
+
+
+
+    var content = positions[i].content;
+
+
+var overlay = new kakao.maps.CustomOverlay({
+    content: content,
+    position: positions[i].latlng,
+    clickable: true
+});
+
+kakao.maps.event.addListener(marker, 'click', makeClickListener(map, marker, overlay));
+kakao.maps.event.addListener(map, 'click', getClickMap(map, overlay));
+
+
+
+function makeClickListener(map, marker, overlay) {
+return function() {
+    overlay.setMap(map);
+};
+}
+
+
+function closeOverlay() {
+    overlay.setMap(null);
+}
+
+
+
+
+}
+
+
+function getClickMap(map, overlay){
+return function(){
+    overlay.setMap(null);
+}
+}
+
+
+const showMenu = (toggleId, navbarId, bodyId) => {
+    const toggle = document.getElementById(toggleId),
+    navbar = document.getElementById(navbarId),
+    bodypadding = document.getElementById(bodyId)
+
+    if( toggle && navbar ) {
+        toggle.addEventListener('click', ()=>{
+            navbar.classList.toggle('expander');
+
+            bodypadding.classList.toggle('body-pd')
+        })
+    }
+}
+
+showMenu('nav-toggle', 'navbar', 'body-pd')
+
+/* LINK ACTIVE */
+const linkColor = document.querySelectorAll('.nav__link')
+function colorLink() {
+    linkColor.forEach(l=> l.classList.remove('active'))
+    this.classList.add('active')
+}
+linkColor.forEach(l=> l.addEventListener('click', colorLink))
+
+/* COLLAPSE MENU */
+const linkCollapse = document.getElementsByClassName('collapse__link')
+var i
+
+for(i=0;i<linkCollapse.length;i++) {
+    linkCollapse[i].addEventListener('click', function(){
+        const collapseMenu = this.nextElementSibling
+        collapseMenu.classList.toggle('showCollapse')
+
+        const rotate = collapseMenu.previousElementSibling
+        rotate.classList.toggle('rotate')
+    });
+}
+</script>
+<script>
+    $("#current").click(() => {
+        if("geolocation" in navigator){
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const latlng = new kakao.maps.LatLng(lat, lng);
+                marker = new kakao.maps.Marker({ //현재 위치 마커 이따 수정해야함.
+                    map: map,
+                    position: latlng,
+                });
+                
+                panTo(latlng);
+            });
+        }else{
+            alert('위치 정보 사용 불가능')
+        }
+    });
+    function panTo(latlng) {
+    // 이동할 위도 경도 위치를 생성합니다 
+    var level = map.getLevel();
+    
+    // 지도를 1레벨 내립니다 (지도가 확대됩니다)
+    map.setLevel(level = 2);
+
+
+    var moveLatLon = latlng; 
+    // 지도 중심을 부드럽게 이동시킵니다
+    // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
+    map.panTo(moveLatLon); 
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>선별 진료소</title>
+   <link rel="stylesheet" href="/stylesheets/find_H.css" />
+</head>
+<body>
+    <ul id="button_bar">
+    <li style="float: right;">
+      <a class="searchB" href="/search">장소 검색</a> <!-- 업로드 페이지로 넘어가는 버튼, 클래스명을  -->
+    </li> 
+    <li style="float: right;"> 
+        <a class="mapB" href="./map">메인 페이지</a> <!-- 원래의 지도 페이지로 돌아가는 버튼 -->
+    </li>
+  </ul>
+    <div id="map" style="width:100%;height:100vh;">
+        <div style="position: absolute; z-index:100; left:20px; top: 60px;">
+            <button onclick='zoomIn()'>지도 확대</button>
+            <button onclick='zoomOut()'>지도 축소</button>
+        </div>
+        
+        <div style="position: absolute; z-index:100; left:20px; top: 100px;">
+            <button onclick='showMarkers()'>마커 보이기</button>
+            <button onclick='hideMarkers()'>마커 지우기</button>
+        </div>
+    </div>
+
+
+   <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d7d5202f8a4ccb3ba72bdf454037d421&libraries=clusterer"></script>
+   
+    
+
+
+
+    <script>
+        //지도에 관한 코드
+      var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+          mapOption = {
+              center: new daum.maps.LatLng(37.56667736016578, 126.97822787621796), // 지도의 중심좌표 (서울시청)
+              level: 4, // 지도의 확대 레벨
+              mapTypeId : daum.maps.MapTypeId.ROADMAP // 지도종류
+          }; 
+            
+      // 지도를 생성한다 
+    var map = new daum.maps.Map(mapContainer, mapOption); 
+
+    var imageSrc = 'https://cdn.discordapp.com/attachments/921406406324793394/922647514941898803/4c6f131e0851bdc9.png', // 선별 진료소 이미지 링크   
+    imageSize = new daum.maps.Size(33, 35), // 마커이미지의 크기
+    imageOption = {offset: new daum.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+    var markerImage = new daum.maps.MarkerImage(imageSrc, imageSize, imageOption) //markerImage에 이미지 링크, 마커 이미지 크기, 이미지 안에서의 좌표를 담음
+
+    var imageSrcs = 'https://cdn.discordapp.com/attachments/921419397774589952/921787112104280135/black_green.png', // 선별 진료소 이미지 링크   
+    imageSizes = new daum.maps.Size(33, 35), // 마커이미지의 크기
+    imageOptions = {offset: new daum.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+    var markerImages = new daum.maps.MarkerImage(imageSrcs, imageSizes, imageOptions) //markerImage에 이미지 링크, 마커 이미지 크기, 이미지 안에서의 좌표를 담음
+        
+    var markers = [];
+
+
+    
+
+
+        var main_positions = document.getElementsByClassName('Seoul');
+
+        main_positions = [
+
+            {
+                content: '<div class="ellipsis" style = " padding 5px"><a href="https://map.naver.com/v5/search/%EC%A4%91%EA%B5%AC%20%EB%B3%B4%EA%B1%B4%EC%86%8C/place/11582988?placePath=%3Fentry=pll%26from=nx%26fromNxList=true&c=14138332.4368665,4518090.6888351,15,0,0,0,dh">중구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.564540379013714, 127.01514976487525),
+                Call: '전화번호: 02-3396-5555',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+
+            {
+                content: '<div class="ellipsis" style= "padding 5px"><a href="https://map.naver.com/v5/search/%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%B3%B4%EA%B1%B4%EC%86%8C/place/33576274?c=14112433.6456389,4511331.8458820,10,0,0,0,dh&placePath=%3Fentry%253Dpll">강남구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.51598941787361, 127.04212396748864),
+                Call: '전화번호: 02-3423-5555',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%82%BC%EC%84%B1%20%EC%84%9C%EC%9A%B8%20%EB%B3%91%EC%9B%90/place/11554044?placePath=%3Fentry=pll%26from=nx%26fromNxList=true&placeSearchOption=entry=pll%26fromNxList=truel">삼성 서울 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.48913046597951, 127.08763166821058),
+                Call: '전화번호: 02-1599-3114',
+                mf: '평일: 09:00 ~ 16:30',
+                we: '토요일: 09:00 ~ 16:30',
+                sun: '일: 09:00 ~ 16:30'
+            },
+
+            {
+                content: '<div class="ellipsis" style = " padding 5px"><a href="https://map.naver.com/v5/entry/place/11686889?c=14141793.1260643,4508039.3558238,15,0,0,0,dh">강남 세브란스 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.492923256469076, 127.04626609704712),
+                Call: '전화번호: 02-1599-6114',
+                mf: '평일: 24시간 영업',
+                we: '토: 24시간 영업',
+                sun: '일: 24시간 영업'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EA%B0%95%EB%8F%99%EA%B5%AC%20%EB%B3%B4%EA%B1%B4%EC%86%8C?c=14136448.2097695,4513259.3803656,10,0,0,0,dh">강동구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.52942366490181, 127.12553949704835),
+                Call: '전화번호: 02-3425-6713',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%A4%91%EC%95%99%20%EB%B3%B4%ED%9B%88%20%EB%B3%91%EC%9B%90/place/11582978?c=14139163.2698860,4513330.6894833,10,0,0,0,dh">중앙 보훈 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.530647160269645, 127.14803854395134),
+                Call: '전화번호: 02-2225-1111',
+                mf: '평일: 09:00 ~ 17:30',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11854472?c=14140170.3995831,4516533.6996844,11,0,0,0,dh">강동 경희 대학교 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.55367120403092, 127.15763606821287),
+                Call: '전화번호: 02-440-7000',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 12:00',
+                sun: '일: 미운영'
+
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667936?c=14126946.9799108,4527600.0283916,11,0,0,0,dh">강북구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.6322533131694, 127.03876729705212),
+                Call: '전화번호: 02-901-7704.7706',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+                
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667940?c=14107993.8569917,4515998.3082470,11,0,0,0,dh">강서구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.549588287798194, 126.86826627116413),
+                Call: '전화번호: 02-2600-5465',
+                mf: '평일: 09:00 ~ 20:30',
+                we: '토: 09:00 ~ 17:30',
+                sun: '일: 09:00 ~ 17:30'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667938?c=14017094.6800062,4518171.2997623,7,0,0,0,dh">관악구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.47860426393677, 126.95111349704659),
+                Call: '전화번호: 02-879-7133/7136',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12072198?c=14017094.6800062,4518171.2997623,7,0,0,0,dh">에이치플러스 양지 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.48440387783028, 126.93251089704675),
+                Call: '전화번호: 1877-8875',
+                mf: '평일: 08:30 ~ 17:00',
+                we: '토: 08:30 ~ 12:30',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11668684?c=14139292.6676621,4514451.3451788,11,0,0,0,dh">광진구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.538543627245986, 127.08238313937599),
+                Call: '전화번호: 02-450-7090',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11686891?c=14145035.2171781,4514690.8214000,15,0,0,0,dh">건국 대학교 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.54091226256232, 127.07221900196856),
+                Call: '전화번호: 02-1588-1533',
+                mf: '평일: 08:30 ~ 17:00',
+                we: '토: 08:30 ~ 12:00',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667942?c=14124803.1446293,4509038.8718767,15,0,0,0,dh">구로구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.50026323806157, 126.88932409704736),
+                Call: '전화번호: 02-860-2012',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11686883?c=14124293.3458893,4507916.2276320,15,0,0,0,dh">고려 대학교 구로 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.49238753252071, 126.88494779704715),
+                Call: '전화번호: 02-2626-1554',
+                mf: '평일: 09:00 ~ 17:30',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/1406307751?c=14122239.0337423,4508985.2996522,15,0,0,0,dh">구로 성심 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.49982523916011, 126.86637209704736),
+                Call: '전화번호: 02-2067-1500',
+                mf: '평일: 09:00 ~ 17:30',
+                we: '토: 09:00 ~ 12:30',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667944?c=14125536.3949832,4503002.5227121,15,0,0,0,dh">금천구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.45722011265796, 126.8959513970458),
+                Call: '전화번호: 02-2627-2717',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11603938?c=14126041.2511378,4502803.5879811,15,0,0,0,dh">희명 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.45586024936992, 126.90060322588215),
+                Call: '전화번호: 02-2219-7231',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 12:00',
+                sun: '일: 09:00 ~ 12:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11582991?c=14143457.5416948,4530734.7339390,15,0,0,0,dh">노원구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.65425655700057, 127.05660449705299),
+                Call: '전화번호: 02-2116-3000',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 13:00 ~ 17:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12131112?c=14144136.4013455,4529892.9279220,15,0,0,0,dh">인제대학교 상계백병원</a></div>',
+                latlng: new daum.maps.LatLng(37.64890204719697, 127.06315697435056),
+                Call: '전화번호: 02-950-1114',
+                mf: '평일: 09:00 ~ 16:00',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12131112?c=14144136.4013455,4529892.9279220,15,0,0,0,dh">도봉구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.65810722110139, 127.03875844232724),
+                Call: '전화번호: 02-2091-4434',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 17:30',
+                sun: '일: 09:00 ~ 17:30'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11559230?c=14140351.4829988,4529557.1777221,15,0,0,0,dh">한일 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.64621775163169, 127.02856806558279),
+                Call: '전화번호: 02-901-3114',
+                mf: '평일: 09:00 ~ 17:30',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            // 23번째까지 했음
+
+
+
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11668689?c=14141584.8918249,4519519.6025794,15,0,0,0,dh">동대문구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.5747605445636, 127.04014696821373),
+                Call: '전화번호: 02-2127-4283',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11559113?c=14144379.4451898,4521385.1343303,15,0,0,0,dh">삼육 서울 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.58807341588136, 127.06532149705058),
+                Call: '전화번호: 1577-3675',
+                mf: '평일: 09:00 ~ 16:30',
+                we: '토: 미운영',
+                sun: '일: 09:00 ~ 16:30'
+            },
+            
+            {
+                content: '<div style = " padding 5px">서울특별시 동부 병원</div>',
+                latlng: new daum.maps.LatLng(37.575527049135346, 127.03150926821361),
+                Call: '전화번호: 920-9435/9119',
+                mf: '평일: 09:00 ~ 17:30',
+                we: '토: 09:00 ~ 12:30',
+                sun: '일: 09:00 ~ 12:30'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11814851?c=14140598.4118933,4519612.0229036,15,0,0,0,dh">서울 성심 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.58432242487899, 127.049812468214),
+                Call: '전화번호: 1588-4100',
+                mf: '평일: 08:30 ~ 16:30',
+                we: '토: 08:30 ~ 11:30',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/13170728?c=14142881.6859689,4522246.1207561,15,0,0,0,dh">경희 의료원</a></div>',
+                latlng: new daum.maps.LatLng(37.59386699790923, 127.05133422880469),
+                Call: '전화번호: 02-2958-8114',
+                mf: '평일: 08:30 ~ 17:30',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667935?c=14130553.9206556,4509647.4087145,15,0,0,0,dh">동작구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.50473069314134, 126.94090826821113),
+                Call: '전화번호: 02-820-9465',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11814778?c=14128638.7801360,4508111.1625634,15,0,0,0,dh">보라매 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.49361875472493, 126.92399306821082),
+                Call: '전화번호: 02-870-2114',
+                mf: '평일: 09:00 ~ 17:30',
+                we: '토: 09:00 ~ 12:30',
+                sun: '일: 09:00 ~ 12:30'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12249132?c=14132744.0314494,4509978.2965122,15,0,0,0,dh">중앙 대학교 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.50689874506695, 126.96080203262939),
+                Call: '전화번호: 1800-1114',
+                mf: '평일: 08:30 ~ 17:00',
+                we: '토: 08:30 ~ 12:00',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11582986?c=14126182.9274538,4518445.4236935,15,0,0,0,dh">마포구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.566499371813535, 126.90206906821331),
+                Call: '전화번호: 02-3153-9037',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667932?c=14130010.1694709,4520058.8543847,15,0,0,0,dh">서대문구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.57874473546357, 126.93625749705019),
+                Call: '전화번호: 02-330-1806',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11693113?c=14130522.3727119,4517782.9405646,15,0,0,0,dh">세브란스 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.562484385405526, 126.94086903633513),
+                Call: '전화번호: 1599-1004',
+                mf: '평일: 08:00 ~ 15:30',
+                we: '토: 08:00 ~ 11:30',
+                sun: '일: 미운영'
+            },
+
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11815341?c=14135870.6619873,4518171.2997623,15,0,0,0,dh">인제 대학교 서울 백병원</a></div>',
+                latlng: new daum.maps.LatLng(37.56507966667142, 126.98875249704972),
+                Call: '전화번호: 02-2270-0114',
+                mf: '평일: 09:00 ~ 17:30',
+                we: '토: 09:00 ~ 12:30',
+                sun: '일: 09:00 ~ 12:30'
+                // 수정해야함
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11638728?c=14137740.8405646,4518466.7567604,15,0,0,0,dh">국립 중앙 의료원</a></div>',
+                latlng: new daum.maps.LatLng(37.57924429935891, 126.97985646519331),
+                Call: '전화번호: 02-2260-7114',
+                mf: '평일: 08:30 ~ 16:30',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11637436?c=14137740.8405646,4518466.7567604,15,0,0,0,dh">가톨릭 대학교 서울 성모 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.50193901074431, 127.00479059704735),
+                Call: '전화번호: 02-1588-1511',
+                mf: '평일: 08:00 ~ 16:30',
+                we: '토: 08:00 ~ 12:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/19512688?c=14144782.5998576,4502830.4003372,15,0,0,0,dh">서울특별시 어린이 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.45565111623171, 127.06883869704572),
+                Call: '전화번호: 02-570-8000',
+                mf: '평일: 10:00 ~ 15:00',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11582987?c=14140832.4499907,4506734.7980600,15,0,0,0,dh">서초보건소</div>',
+                latlng: new daum.maps.LatLng(37.48378877937243, 127.03343869704672),
+                Call: '전화번호: 02-2155-8093',
+                mf: '평일: 09:00 ~ 20:30',
+                we: '토: 09:00 ~ 17:30',
+                sun: '일: 09:00 ~ 17:30'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12166470?c=14140808.5385641,4518437.1095673,15,0,0,0,dh">성동구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.56720576181658, 127.0331756682134),
+                Call: '전화번호: 02-2286-7172',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12134966?c=14142022.5110071,4517405.5069867,15,0,0,0,dh">한양 대학교 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.55981158186354, 127.04395748075116),
+                Call: '전화번호: 02-2290-8114/8531',
+                mf: '평일: 08:30 ~ 17:30',
+                we: '토: 08:30 ~ 12:30',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/1995983809?c=14144419.2864355,4515828.2468116,15,0,0,0,dh">성동 군자 의원</a></div>',
+                latlng: new daum.maps.LatLng(37.54856290437896, 127.06563866821278),
+                Call: '전화번호: 02-499-7785',
+                mf: '평일: 09:00 ~ 20:00',
+                we: '토: 09:00 ~ 12:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667934?c=14141512.6900031,4523447.2454489,15,0,0,0,dh">성북구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.60282958052117, 127.03951809705103),
+                Call: '전화번호: 02-2241-5912',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12131103?c=14140043.2281969,4521248.2506795,15,0,0,0,dh">고려 대학교 의료원 안암 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.587220117928304, 127.02651873937765),
+                Call: '전화번호: 1577-0083' ,
+                mf: '평일: 09:00 ~ 16:00',
+                we: '토: 09:00 ~ 12:30',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667945?c=14148975.7045132,4511083.7592580,15,0,0,0,dh">송파구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.51469616145068, 127.10654199704784),
+                Call: '전화번호: 02-2147-3479',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+            
+            //46번까지 했음
+
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11686884?c=14149124.8169711,4512761.1004033,15,0,0,0,dh">서울 아산 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.5276628348296, 127.10908586821195),
+                Call: '전화번호: 02-1688-7575',
+                mf: '평일: 09:00 ~ 23:00',
+                we: '토: 09:00 ~ 23:00',
+                sun: '일: 09:00 ~ 23:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667937?c=14115277.3799548,4511419.2677485,11,0,0,0,dh">양천구 보건소(</div>',
+                latlng: new daum.maps.LatLng(37.51770897478017, 126.865870697048),
+                Call: '전화번호: 02-2620-3856',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/19512687?c=14143871.6835964,4508523.9696654,11,0,0,0,dh">국립 경찰 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.496365713211176, 127.12344017743308),
+                Call: '전화번호: 02-3400-1114',
+                mf: '평일: 09:00 ~ 15:30',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12131140?c=14117455.0674935,4514168.4676161,11,0,0,0,dh">이화 여자대학교 의과 대학 부속 목동병원</a></div>',
+                latlng: new daum.maps.LatLng(37.536549531796425, 126.8864216682123),
+                Call: '전화번호: 1666-5000',
+                mf: '평일: 08:00 ~ 17:30',
+                we: '토: 09:00 ~ 12:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/35483506?c=14111547.9432423,4510710.3141489,11,0,0,0,dh">서울특별시 서남 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.51255906583746, 126.8331163970479),
+                Call: '전화번호: 1566-6688',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 12:30',
+                sun: '일: 09:00 ~ 12:30'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12410587?c=14114943.7220451,4513027.7694558,11,0,0,0,dh">홍익 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.52863908389954, 126.86360816821197),
+                Call: '전화번호: 02-2693-5555',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11582994?c=14118500.0792133,4512728.8305117,11,0,0,0,dh">영등포구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.52661083392532, 126.89552293445526),
+                Call: '전화번호: 02-2670-3114',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 14:00',
+                sun: '일: 09:00 ~ 14:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11814781?c=14119953.9896867,4508151.1208841,11,0,0,0,dh">한림 대학교 강남성심병원</a></div>',
+                latlng: new daum.maps.LatLng(37.523198575894824, 126.90969122904036),
+                Call: '전화번호: 02-829-5114',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12395595?c=14128580.2594797,4510707.2126876,15,0,0,0,dh">성애의료재단 성애병원</a></div>',
+                latlng: new daum.maps.LatLng(37.51194291245862, 126.922381346394),
+                Call: '전화번호: 02-840-7114',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11686905?c=14130068.7791828,4511603.0258663,15,0,0,0,dh">가톨릭 대학교 여의도성모병원</a></div>',
+                latlng: new daum.maps.LatLng(37.51786833955732, 126.93555760500354),
+                Call: '전화번호: 1661-7575',
+                mf: '평일: 08:00 ~ 16:30',
+                we: '토: 08:00 ~ 12:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px">인봉의료재단 영등포 병원</div>',
+                latlng: new daum.maps.LatLng(37.52678780695817, 126.89566231741921),
+                Call: '전화번호: 02-2632-0013',
+                mf: '평일: 08:30 ~ 17:30',
+                we: '토: 08:30 ~ 12:30',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11582989?c=14129081.4198273,4513561.6613653,11,0,0,0,dh">용산구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.532537557086506, 126.99035056821208),
+                Call: '전화번호: 02-2199-8373~6',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11686911?c=14130596.7118679,4513775.6805795,11,0,0,0,dh">순천향 대학교 서울 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.53411414524106, 127.00432286821223),
+                Call: '전화번호: 02-709-9114',
+                mf: '평일: 08:30 ~ 17:30',
+                we: '토: 08:30 ~ 12:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/1185911352?c=14122202.3651020,4523418.6941468,11,0,0,0,dh">은평구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.60262218090989, 126.92883666821469),
+                Call: '전화번호: 02-351-8640~1',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/20771579?c=14122202.3651020,4523418.6941468,11,0,0,0,dh">가톨릭 대학교 은평 성모 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.63405420905086, 126.91655919705218),
+                Call: '전화번호: 1811-7755',
+                mf: '평일: 08:30 ~ 16:30',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12130718?c=14122202.3651020,4523418.6941468,11,0,0,0,dh">서울특별시 서북 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.60425340042293, 126.90509742881416),
+                Call: '전화번호: 02-3156-3000',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 15:00 ~ 18:00 단순 진료',
+                sun: '일: 미운영'
+            },
+            
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12113812?c=14127235.3085239,4522231.2988158,13,0,0,0,dh">서울특별시 은평 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.5944050037117, 126.92329679705071),
+                Call: '전화번호: 02-300-8114',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name" href="https://map.naver.com/v5/entry/place/11559166?c=14126773.2881093,4526003.8445549,13,0,0,0,dh">의료법인 청구성심 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.620826982511645, 126.91958840900428),
+                Call: '전화번호: 02-350-3300',
+                mf: '평일: 08:30 ~ 17:30',
+                we: '토: 08:30 ~ 12:20',
+                sun: '일: 미운영'
+              },
+
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/32244909?c=14132293.0094005,4520523.4321652,13,0,0,0,dh">종로구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.58193852816831, 126.96925709705033),
+                Call: '전화번호: 02-2148-3520',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11594928?c=14132293.0094005,4520523.4321652,13,0,0,0,dh">강북 삼성 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.568631099229655, 126.96750929558986),
+                Call: '전화번호: 1599-8114',
+                mf: '평일: 08:00 ~ 17:00',
+                we: '토: 08:00 ~ 12:00',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11814857?c=14132293.0094005,4520523.4321652,13,0,0,0,dh">서울 적십자 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.56829218175139, 126.96691947474014),
+                Call: '전화번호: 02-2002-8000',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/12130919?c=14135602.7271050,4520222.6074799,13,0,0,0,dh">서울 대학교 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.57975601855798, 126.999049643828),
+                Call: '전화번호: 1588-5700',
+                mf: '평일: 10:00 ~ 16:00',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11667931?c=14146034.2762121,4524039.3231725,13,0,0,0,dh">중랑구 보건소</a></div>',
+                latlng: new daum.maps.LatLng(37.606676271247004, 127.09276149705119),
+                Call: '전화번호: 02-2094-0712',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/19792653?c=14146602.6624002,4524937.8385254,13,0,0,0,dh">서울 의료원</a></div>',
+                latlng: new daum.maps.LatLng(37.61295095730214, 127.09817869705141),
+                Call: '전화번호: 02-2276-7000',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 12:00',
+                sun: '일: 09:00 ~ 12:00'
+            },
+            
+              {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/entry/place/11559174?c=14145282.6470103,4520760.3081964,13,0,0,0,dh">녹색 병원</a></div>',
+                latlng: new daum.maps.LatLng(37.58490125248899, 127.08595850034314),
+                Call: '전화번호: 02-490-2000',
+                mf: '평일: 08:30 ~ 17:30',
+                we: '토: 08:30 ~ 12:30',
+                sun: '일: 미운영'
+            }
+        ];
+
+        
+        for (var i = 0; i < main_positions.length; i ++) {
+            var content = 
+            '<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+                        main_positions[i].content+ 
+                        '<hr>'+
+            '           <div class="close" onclick="closeOverlay()" title="닫기"></div>'+ 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="img">' +
+            '                ' +
+            '           </div>' + 
+            '            <div class="desc">' + 
+            '               <hr>    '+
+                            main_positions[i].mf + 
+            '               <hr>    '+
+            '                <div class="jibun ellipsis"></div>' + 
+            '                <div><a class="sun">  </a></div>' + 
+                            main_positions[i].we  +
+        '                   <hr>    '+
+                            main_positions[i].sun +
+            '               <hr>    '+
+                            main_positions[i].Call +
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>';
+            
+
+            // 마커를 생성합니다
+            var marker = new daum.maps.Marker({
+                position: main_positions[i].latlng,
+                image: markerImage, // 마커의 위치
+                clickable: true
+            });
+
+            marker.setMap(map);
+
+var overlay = new daum.maps.CustomOverlay({
+
+    content: content,
+    position: main_positions[i].latlng,
+    clickable: true 
+});
+
+daum.maps.event.addListener(marker, 'click', makeClickListener(map, marker, overlay));
+daum.maps.event.addListener(map, 'click', getClickMap(map, overlay));
+
+function makeClickListener(map, marker, overlay) {
+return function() {
+    overlay.setMap(map);
+};
+}
+
+function closeOverlay() {
+    overlay.setMap(null);   
+}
+}
+
+
+
+
+
+            markers.push(marker)//markers라는 변수 안에 marker라는 마커를 집어 넣어줌.
+    
+
+
+
+
+
+        var temporary_positions = document.getElementsByClassName('Daegu');
+        temporary_positions = [
+            // 임시 선별 진료소
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%B0%BD%EB%8F%99%EC%97%AD(%EC%84%9C)%20%EA%B3%B5%EC%98%81%20%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1126249856?c=14142192.2398347,4530433.5448434,15,0,0,0,dh">창동역(서) 공영 주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.652353397999136, 127.04568123943237),
+                Call: '전화번호: 02-2133-7511',
+                mf: '평일: 13:00 ~ 21:00',
+                we: '토: 13:00 ~ 21:00',
+                sun: '일: 13:00 ~ 21:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%9E%A0%EC%8B%A4%20%EC%A2%85%ED%95%A9%20%EC%9A%B4%EB%8F%99%EC%9E%A5%20%EC%A0%9C2%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1873625598?c=14145364.2553290,4510778.0413115,15,0,0,0,dh">잠실 종합 운동장 제2주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.51324634680465, 127.07395605703654),
+                Call: '전화번호: 02-2133-7511',
+                mf: '평일: 13:00 ~ 21:00',
+                we: '토: 13:00 ~ 21:00',
+                sun: '일: 13:00 ~ 21:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%9B%94%EB%93%9C%EC%BB%B5%20%EA%B3%B5%EC%9B%90%20%ED%8F%89%ED%99%94%20%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1224346874?c=14125546.9480709,4518143.8161412,15,0,0,0,dh"></a>월드컵 공원 평화 광장 임시 선별 검사소</div>',
+                latlng: new daum.maps.LatLng(37.5650765913117, 126.89620943561017),
+                Call: '전화번호: 02-2133-7511',
+                mf: '평일: 13:00 ~ 21:00',
+                we: '토: 13:00 ~ 21:00',
+                sun: '일: 13:00 ~ 21:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%AA%A9%EB%8F%99%20%EC%9A%B4%EB%8F%99%EC%9E%A5%20%EB%82%A8%EB%AC%B8%20%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1076671015?c=14123711.1115566,4513188.4226606,15,0,0,0,dh">목동 운동장 남문 주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.530548786116825, 126.88104715823253),
+                Call: '전화번호: 02-2133-7511',
+                mf: '평일: 08:30 ~ 17:30',
+                we: '토: 13:00 ~ 21:00',
+                sun: '일: 13:00 ~ 21:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%82%BC%EC%84%B1%EC%97%AD%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C%20?c=14144063.1419886,4510339.2820422,15,0,0,0,dh">삼성역 임시 선별 검사소 </a></div>',
+                latlng: new daum.maps.LatLng(37.505934246575414, 126.89865589700322),
+                Call: '전화번호: 02-3423-5555',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%84%B8%EA%B3%A1%EB%8F%99%20%EB%B0%A9%EC%A3%BD%EA%B3%B5%EC%9B%90%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1682023093?c=14148975.3816867,4505167.2651665,15,0,0,0,dh">세곡동 방죽공원 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.47243747070627, 127.10665832505683),
+                Call: '전화번호: 02-3423-5555',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%95%94%EC%82%AC%EC%97%AD%20%EA%B3%B5%EC%9B%90%20%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1892538372?c=14148975.3816867,4505167.2651665,15,0,0,0,dh">암사역 공원 주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.55933066433352, 127.13061625648355),
+                Call: '전화번호: 070-4104-1340',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 미운영'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%98%A8%EC%A1%B0%EB%8C%80%EC%99%95%EC%98%86%20%EA%B3%B5%EC%98%81%20%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1032566322?c=14154581.7874654,4516885.0397509,15,0,0,0,dh">온조대왕옆 공영 주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.555892586597786, 127.15689727012997),
+                Call: '전화번호: 070-7730-0264',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EA%B0%95%EB%B6%81%EA%B5%AC%EB%AF%BC%20%EC%9A%B4%EB%8F%99%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1369383962?c=14141273.0414033,4527258.0688665,15,0,0,0,dh">강북구민 운동장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.629262609506064, 127.0374253858989),
+                Call: '전화번호: 02-989-9840',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%8B%9C%EB%B2%94%20%EA%B3%B5%EC%98%81%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1232640338?c=14139981.1564488,4528687.5335290,15,0,0,0,dh">시범 공영주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.639919416518275, 127.02594106004504),
+                Call: '전화번호: 02-908-8890',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%A7%88%EA%B3%A18%EA%B5%AC%EC%97%AD%20%EA%B3%B5%EC%98%81%EC%A3%BC%EC%B0%A8%EC%9E%A5%201%EC%84%BC%ED%84%B0%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1082077398?c=14118700.1759980,4516953.8740734,15,0,0,0,dh">마곡8구역 공영주차장 1센터 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.556844248180276, 126.83478272584033),
+                Call: '전화번호: 02-2600-5465',
+                mf: '평일: 10:00 ~ 17:00',
+                we: '토: 10:00 ~ 15:00',
+                sun: '일: 10:00 ~ 15:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%A7%88%EA%B3%A18%EA%B5%AC%EC%97%AD%20%EA%B3%B5%EC%98%81%EC%A3%BC%EC%B0%A8%EC%9E%A5%202%EC%84%BC%ED%84%B0%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1102508070?c=14118700.1759980,4516953.8740734,15,0,0,0,dh">마곡8구역 공영주차장 2센터 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.5566674640512, 126.8349524061068),
+                Call: '전화번호: 02-2600-5465',
+                mf: '평일: 10:00 ~ 17:00',
+                we: '토: 10:00 ~ 15:00',
+                sun: '일: 10:00 ~ 15:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%82%99%EC%84%B1%EB%8C%80%20%EA%B3%B5%EC%9B%90%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C?c=14132690.2752673,4505015.3329274,15,0,0,0,dh">낙성대 공원 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.47106661960961, 126.95998999700205),
+                Call: '전화번호: 02-879-7054',
+                mf: '평일: 10:00 ~ 17:00',
+                we: '토: 10:00 ~ 15:00',
+                sun: '일: 10:00 ~ 15:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%A4%91%EA%B3%A1%20%EB%B3%B4%EA%B1%B4%EC%A7%80%EC%86%8C%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1690182749?c=14146807.0561172,4517362.4379863,15,0,0,0,dh">중곡 보건지소 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.55962638409999, 127.0871655835077),
+                Call: '전화번호: 02-450-7090',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%9E%90%EC%96%91%20%EB%B3%B4%EA%B1%B4%EC%A7%80%EC%86%8C%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1409486197?c=14144344.5131336,4514694.2750191,15,0,0,0,dh">자양 보건지소 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.540159151104845, 127.06506709700442),
+                Call: '전화번호: 02-450-7090',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EA%B5%AC%EB%A1%9C%EC%97%AD%20%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1205238596?c=14123827.3847647,4509399.2777886,15,0,0,0,dh">구로역 광장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.50291004554164, 126.88075556816776),
+                Call: '전화번호: 02-860-2012',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%98%A4%EB%A5%98%EB%8F%99%EC%97%AD%20%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1979129321?c=14123827.3847647,4509399.2777886,15,0,0,0,dh">오류동역 광장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.494781151810706, 126.84472159247727),
+                Call: '전화번호: 02-860-2012',
+                mf: '평일: 10:00 ~ 19:00',
+                we: '토: 미운영',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%ED%95%84%EC%8A%B9%20%EC%95%84%ED%8C%8C%ED%8A%B8%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1755792145?c=14125626.9533890,4502861.8684828,15,0,0,0,dh">필승 아파트 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.45592941271617, 126.89678609700152),
+                Call: '전화번호: 02-2627-2717',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 11:00 ~ 15:00',
+                sun: '일: 11:00 ~ 15:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%8F%85%EC%82%B0%20%EB%B3%B4%EA%B1%B4%EB%B6%84%EC%86%8C%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1354926362?c=14126224.9839574,4505341.1792274,15,0,0,0,dh">독산 보건분소 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.47361266505652, 126.90220536816686),
+                Call: '전화번호: 02-2627-2717',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 11:00 ~ 15:00',
+                sun: '일: 11:00 ~ 15:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%85%B8%EC%9B%90%EA%B5%AC%EC%B2%AD%20%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1201722634?c=14143447.1667183,4530648.4018315,15,0,0,0,dh">노원구청 주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.65400519751256, 127.0560907910773),
+                Call: '전화번호: 02-2116-3000',
+                mf: '평일: 09:00 ~ 17:30',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%85%B8%EC%9B%90%EA%B5%AC%EB%AF%BC%EC%9D%98%EC%A0%84%EB%8B%B9%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1125084397?c=14143447.1667183,4530648.4018315,15,0,0,0,dh">노원구민의전당 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.63880699615849, 127.06612329700768),
+                Call: '전화번호: 02-490-2000',
+                mf: '평일: 08:30 ~ 17:30',
+                we: '토: 08:30 ~ 12:30',
+                sun: '일: 미운영'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%8F%84%EB%B4%89%EA%B5%AC%EB%AF%BC%ED%9A%8C%EA%B4%80%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1245867609?c=14144459.7176746,4528502.6034173,15,0,0,0,dh">도봉구민회관 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.65406600897608, 127.03840559700829),
+                Call: '전화번호: 02-2116-3000',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%8F%84%EB%B4%89%EA%B5%AC:%20%EB%8F%84%EB%B4%89%EA%B5%AC%EC%B2%AD%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1758348505?c=14142333.7491714,4532736.5173225,15,0,0,0,dh">도봉구: 도봉구청 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.668721181650824, 127.04703714673833),
+                Call: '전화번호: 02-2091-4483,4490,45',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 17:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%B2%AD%EB%9F%89%EB%A6%AC%EC%97%AD%20%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1762781687?c=14142300.7095465,4520333.8565420,15,0,0,0,dh">청량리역 광장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.58136397485403, 127.04895799700581),
+                Call: '전화번호: 02-2127-4283',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%9E%A5%EC%95%88%20%EA%B7%BC%EB%A6%B0%20%EA%B3%B5%EC%9B%90%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1533619158?c=14145109.2223756,4519904.2619042,15,0,0,0,dh">장안 근린 공원 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.57727150959473, 127.03682273236454),
+                Call: '전화번호: 02-2127-4283',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%82%AC%EB%8B%B9%20%EB%AC%B8%ED%99%94%ED%9A%8C%EA%B4%80%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1842920886?c=14145109.2223756,4519904.2619042,15,0,0,0,dh">사당 문화회관 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.48478832586056, 126.96977819700246),
+                Call: '전화번호: 02-820-9465',
+                mf: '평일: 10:00 ~ 21:00',
+                we: '토: 10:00 ~ 18:00',
+                sun: '일: 10:00 ~ 18:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%8F%99%EC%9E%91%EA%B5%AC%EC%B2%AD%20%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1381511751?c=14133723.5650448,4506882.5887168,15,0,0,0,dh">동작구청 주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.51226773838479, 126.93878679700344),
+                Call: '전화번호: 02-820-9465',
+                mf: '평일: 10:00 ~ 18:00',
+                we: '토: 10:00 ~ 14:00',
+                sun: '일: 10:00 ~ 14:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%84%9C%EA%B0%95%EB%8C%80%20%EC%97%AD%EC%82%AC%20%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1068422793?c=14130380.6963960,4510742.7883284,15,0,0,0,dh">서강대 역사 광장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.55148657392145, 126.93653843933404),
+                Call: '전화번호: 02-3153-8656',
+                mf: '평일: 09:30 ~ 17:00',
+                we: '토: 09:30 ~ 13:00',
+                sun: '일: 09:30 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%ED%99%8D%EC%9D%B5%20%EB%AC%B8%ED%99%94%20%EA%B3%B5%EC%9B%90%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C%20/place/1553748217?c=14129916.9505293,4516379.7630649,15,0,0,0,dh">홍익 문화 공원 임시 선별 검사소 </a></div>',
+                latlng: new daum.maps.LatLng(37.552246474008015, 126.92330262584024),
+                Call: '전화번호: 02-3153-8308',
+                mf: '평일: 09:30 ~ 17:00',
+                we: '토: 09:30 ~ 13:00',
+                sun: '일: 09:30 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%8B%A0%EC%B4%8C%20%EA%B8%B0%EC%B0%A8%EC%97%AD%20%EA%B3%B5%EC%98%81%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1711083336?c=14130772.9417538,4517359.1379561,15,0,0,0,dh">신촌 기차역 공영주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.55926874791696, 126.94295423879399),
+                Call: '전화번호: 02-330-1806',
+                mf: '평일: 10:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%ED%99%8D%EC%A0%9C%20%EA%B2%AC%EC%9D%B8%20%EC%B0%A8%EB%9F%89%20%EB%B3%B4%EA%B4%80%EC%86%8C%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1650123430?c=14130543.0781372,4521784.5852279,15,0,0,0,dh">홍제 견인 차량 보관소 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.590601376962304, 126.9407274970061),
+                Call: '전화번호: 02-330-1806',
+                mf: '평일: 10:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%84%9C%EC%9A%B8%EC%97%AD%20%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1204087791?c=14133982.8281388,4516936.4337554,15,0,0,0,dh">서울역 광장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.55597854348059, 126.97190796615584),
+                Call: '전화번호: 02-3396-5181',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%84%9C%EC%9A%B8%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C?c=14133982.8281388,4516936.4337554,15,0,0,0,dh">서울광장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.56559908407848, 126.97802509700519),
+                Call: '전화번호: 02-3396-5181',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EA%B3%A0%EC%86%8D%ED%84%B0%EB%AF%B8%EB%84%90%EC%97%AD%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C?c=14137691.5594261,4509869.9920528,15,0,0,0,dh">고속터미널역 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.50488864621792, 127.00491509700318),
+                Call: '전화번호: 02-2155-8093',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 13:00 ~ 17:00',
+                sun: '일: 13:00 ~ 17:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EA%B0%95%EB%82%A8%EC%97%AD%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C?c=14140116.5988732,4508844.9018741,15,0,0,0,dh">강남역 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.497918187600916, 127.02762886441953),
+                Call: '전화번호: 02-2155-8093',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 13:00 ~ 17:00',
+                sun: '일: 13:00 ~ 17:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%82%AC%EB%8B%B9%EC%97%AD%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C?c=14135150.8478960,4505762.6441985,15,0,0,0,dh">사당역 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.47654195096007, 126.98163299700225),
+                Call: '전화번호: 02-2155-8093',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 13:00 ~ 17:00',
+                sun: '일: 13:00 ~ 17:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%8B%AC%EC%82%B0%20%EA%B8%B0%EB%85%90%20%EB%AC%B8%ED%99%94%EC%84%BC%ED%84%B0%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1692201620?c=14135150.8478960,4505762.6441985,15,0,0,0,dh">심산 기념 문화센터 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.49901774421129, 126.99160899700294),
+                Call: '전화번호: 02-2155-8093',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 13:00 ~ 17:00',
+                sun: '일: 13:00 ~ 17:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%84%B1%EB%8F%99%EA%B5%AC%EC%B2%AD%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1649590129?c=14141208.4538348,4517939.0183909,15,0,0,0,dh">성동구청 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.56219646713945, 127.03623802834775),
+                Call: '전화번호: 02-2286-7172',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 13:00 ~ 13:00',
+                sun: '일: 13:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%84%B1%EC%88%98%20%EA%B5%AC%EB%91%90%20%ED%85%8C%EB%A7%88%20%EA%B3%B5%EC%9B%90%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1268279949?c=14142942.4441470,4515324.1583811,15,0,0,0,dh">성수 구두 테마 공원 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.54475085985014, 127.05240919700447),
+                Call: '전화번호: 02-2286-7172',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%84%B1%EB%B6%81%EA%B5%AC%EC%B2%AD%20%EB%B0%94%EB%9E%8C%20%EB%A7%88%EB%8B%B9%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C%20?c=14142942.4441470,4515324.1583811,15,0,0,0,dh">성북구청 바람 마당 임시 선별 검사소 </a></div>',
+                latlng: new daum.maps.LatLng(37.58932782655803, 127.01675593988743),
+                Call: '전화번호: 02-2241-5271',
+                mf: '평일: 10:00 ~ 17:00',
+                we: '토: 10:00 ~ 15:00',
+                sun: '일: 10:00 ~ 15:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EA%B8%B8%EC%9D%8C%20%EC%96%B4%EC%9A%B8%EB%A6%BC%20%EB%A7%88%EB%8B%B9%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C%20/place/1832363352?c=14139919.0847007,4523574.9544669,15,0,0,0,dh">길음 어울림 마당 임시 선별 검사소 </a></div>',
+                latlng: new daum.maps.LatLng(37.60373254634357, 127.02530019971567),
+                Call: '전화번호: 02-2241-5271',
+                mf: '평일: 10:00 ~ 17:00',
+                we: '토: 10:00 ~ 15:00',
+                sun: '일: 10:00 ~ 15:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%98%AC%EB%A6%BC%ED%94%BD%20%EA%B3%B5%EC%9B%90%20%ED%8F%89%ED%99%94%EC%9D%98%20%EB%AC%B8%20%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1824137130?c=14149908.0943042,4511583.7839539,15,0,0,0,dh">올림픽 공원 평화의 문 광장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.518251860094644, 127.11533338124731),
+                Call: '전화번호: 02-2147-3479',
+                mf: '평일: 10:00 ~ 21:00',
+                we: '토: 10:00 ~ 18:00',
+                sun: '일: 10:00 ~ 18:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%AC%B8%EC%A0%95%20%EB%8F%84%EC%8B%9C%20%EA%B0%9C%EB%B0%9C%20%EA%B5%AC%EC%97%AD%20%EA%B4%91%EC%9E%A5/place/1990940579?c=14150302.3434128,4506833.0817711,15,0,0,0,dh">문정 도시 개발 구역 광장</a></div>',
+                latlng: new daum.maps.LatLng(37.48448826563814, 127.1182684883074),
+                Call: '전화번호: 02-2147-3479',
+                mf: '평일: 10:00 ~ 17:00',
+                we: '토: 10:00 ~ 15:00',
+                sun: '일: 10:00 ~ 15:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%96%91%EC%B2%9C%EA%B5%AC%20%EC%9D%98%ED%9A%8C%20%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1790975944?c=14150302.3434128,4506833.0817711,15,0,0,0,dh">양천구 의회 주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.51734636801788, 126.86680440955428),
+                Call: '전화번호: 02-2620-3856',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%8B%A0%EC%9B%94%20%EB%AC%B8%ED%99%94%20%EC%B2%B4%EC%9C%A1%20%EC%84%BC%ED%84%B0%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1854115734?c=14122208.5544657,4511528.9075053,15,0,0,0,dh">신월 문화 체육 센터 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.51976245130314, 126.83499552583905),
+                Call: '전화번호: 02-2620-3856',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%8C%80%EB%A6%BC%EB%8F%99%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C%20?c=14125740.7775683,4508158.6130861,15,0,0,0,dh">대림동 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.50600233519438, 126.8986344393325),
+                Call: '전화번호: 02-2670-4953',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%97%AC%EC%9D%98%EB%8F%84%20%EA%B3%B5%EC%9B%90%20%EB%82%B4%20%EB%AC%B8%ED%99%94%EC%9D%98%20%EB%A7%88%EB%8B%B9%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1931853467?c=14128215.8217307,4512483.8268145,15,0,0,0,dh">여의도 공원 내 문화의 마당 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.52540094520903, 126.92151586484788),
+                Call: '전화번호: 02-2670-4953',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%9A%A9%EC%82%B0%EC%97%AD%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C?c=14133285.2222859,4513121.7326824,15,0,0,0,dh">용산역 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.52984098832486, 126.96480232301151),
+                Call: '전화번호: 02-2199-8373',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 미운영'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%ED%95%9C%EB%82%A8%EB%8F%99%20%EA%B3%B5%EC%98%81%20%EC%A3%BC%EC%B0%A8%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1685061689?c=14137140.5168147,4513917.5763547,15,0,0,0,dh">한남동 공영 주차장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.534759348641586, 127.00005549700418),
+                Call: '전화번호: 02-2199-8373',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 미운영',
+                sun: '일: 미운영'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%9D%80%ED%8F%89%20%ED%8F%89%ED%99%94%20%EA%B3%B5%EC%9B%90%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1426472695?c=14137140.5168147,4513917.5763547,15,0,0,0,dh">은평 평화 공원 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.605186021532916, 126.9234164739944),
+                Call: '전화번호: 02-351-8640',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 09:00 ~ 18:00',
+                sun: '일: 09:00 ~ 18:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EA%B5%AC%ED%8C%8C%EB%B0%9C%EC%97%AD%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C?c=14128558.1180330,4523843.5433278,15,0,0,0,dh">구파발역 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.63659042106463, 126.91883542620383),
+                Call: '전화번호: 02-351-8640',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%84%9C%EC%9A%B8%20%ED%98%81%EC%8B%A0%20%ED%8C%8C%ED%81%AC?c=14128090.6095675,4528315.9896912,15,0,0,0,dh">서울 혁신 파크</a></div>',
+                latlng: new daum.maps.LatLng(37.608551381694646, 126.93384899700676),
+                Call: '전화번호: 02-351-8640',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00 (공휴일만 운영)'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EC%A2%85%EB%A1%9C%20%EA%B5%AC%EB%AF%BC%ED%9A%8C%EA%B4%80%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1514848604?c=14138713.4055598,4519360.6078232,15,0,0,0,dh">종로 구민회관 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.57323937629075, 127.01435559367113),
+                Call: '전화번호: 02-2148-3725',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 13:00 ~ 17:00',
+                sun: '일: 미운영'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%ED%83%91%EA%B3%A8%20%EA%B3%B5%EC%9B%90%20%EC%82%BC%EC%9D%BC%EB%AC%B8%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1808699944?c=14138713.4055598,4519360.6078232,15,0,0,0,dh">탑골 공원 삼일문 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.57046612815199, 126.98845992001762),
+                Call: '전화번호: 02-2148-3725',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 13:00 ~ 17:00',
+                sun: '일: 미운영'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%A9%B4%EB%AA%A9%EC%97%AD%20%EA%B4%91%EC%9E%A5%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1413943182?c=14135841.0176070,4518930.2806936,15,0,0,0,dh">면목역 광장 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.58874054821995, 127.08748035144437),
+                Call: '전화번호: 02-2094-0800',
+                mf: '평일: 09:00 ~ 21:00',
+                we: '토: 11:00 ~ 15:00',
+                sun: '일: 11:00 ~ 15:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%A7%9D%EC%9A%B0%EC%97%AD%20%EA%B3%B5%EC%9B%90%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1189052493?c=14147425.6585275,4522907.7345706,15,0,0,0,dh">망우역 공원 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(35.8767892517647, 128.65744845775416),
+                Call: '전화번호: 02-2094-0800',
+                mf: '평일: 09:00 ~ 17:00',
+                we: '토: 09:00 ~ 13:00',
+                sun: '일: 09:00 ~ 13:00'
+            },
+
+            {
+                content: '<div style = " padding 5px"><a class="H_name"href="https://map.naver.com/v5/search/%EB%A7%9D%EC%9A%B0%20%EC%A0%80%EB%A5%98%EC%A1%B0%20%EA%B3%B5%EC%9B%90%20%EC%9E%84%EC%8B%9C%20%EC%84%A0%EB%B3%84%20%EA%B2%80%EC%82%AC%EC%86%8C/place/1433576149?c=14147425.6585275,4522907.7345706,15,0,0,0,dh">망우 저류조 공원 임시 선별 검사소</a></div>',
+                latlng: new daum.maps.LatLng(37.59937878701811, 127.11150156632347),
+                Call: '전화번호: 02-2094-0800',
+                mf: '평일: 09:00 ~ 18:00',
+                we: '토: 11:00 ~ 15:00',
+                sun: '일: 11:00 ~ 15:00'
+            }
+        ];
+
+
+        for (var i = 0; i < temporary_positions.length; i ++) {
+
+            var contents = 
+            '<div class="wrap">' + 
+            '    <div class="info">' + 
+            '        <div class="title">' + 
+                        temporary_positions[i].content+ 
+            '            <div class="close" onclick="closeOverlay()" title="닫기"></div>' + 
+            '        </div>' + 
+            '        <div class="body">' + 
+            '            <div class="img">' +
+            '                ' +
+            '           </div>' + 
+            '            <div class="desc">' + 
+            '                 <hr>    '+
+            temporary_positions[i].mf + 
+            '               <hr>    '+
+            '                <div class="jibun ellipsis"></div>' + 
+            '                <div><a class="sun">  </a></div>' + 
+            temporary_positions[i].we  +
+        '                   <hr>    '+
+        temporary_positions[i].sun +
+            '               <hr>    '+
+            temporary_positions[i].Call +
+            '            </div>' + 
+            '        </div>' + 
+            '    </div>' +    
+            '</div>';
+             
+            var markerq = new daum.maps.Marker({
+                position: temporary_positions[i].latlng,  // 마커의 위치
+                image: markerImage,
+                clickable: true
+            });
+            markerq.setMap(map);
+
+            var mapoverlay = new daum.maps.CustomOverlay({
+                clickable: true,
+                content: contents,
+                position: temporary_positions[i].latlng
+        });
+
+        daum.maps.event.addListener(markerq, 'click', makeClickListeners(map, markerq, mapoverlay));
+        daum.maps.event.addListener(map, 'click', getClickMap(map, mapoverlay));
+
+function makeClickListeners(map, markerq, mapoverlay) {
+return function() {
+    mapoverlay.setMap(map);
+};
+}
+
+function closeOverlay() {
+    mapoverlay.setMap(null);     
+}
+}
+
+function getClickMap(map, mapoverlay){
+return function(){
+    mapoverlay.setMap(null);
+}
+}
+
+function getClickMap(map, overlay){
+return function(){
+    overlay.setMap(null);
+}
+}
+
+        // 인포윈도우를 표시하는 클로저를 만드는 함수입니다 
+        function makeOverListener(map, marker,mapoverlay) {
+            return function() {
+               mapoverlay.open(map, marker);
+            };
+        }
+
+
+// 인포윈도우를 닫는 클로저를 만드는 함수입니다 
+        function makeOutListener(infowindow) {
+            return function() {
+           mapoverlay.close();
+        };
+    }
+
+
+    
+
+       var clusterer = new daum.maps.MarkerClusterer({
+            map: map, // 마커들을 클러스터러로 관리하고 표시할 지도 객체 
+            averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+            minLevel: 10 // 클러스터 할 최소 지도 레벨 
+    });
+      
+
+      // 클러스터러에 마커들을 추가합니다
+      clusterer.addMarkers(markers) 
+
+   </script>
+
+</body>
+</html>
